@@ -1,5 +1,6 @@
+import { UserTasteInput } from "@/types/UserTaste";
 import { UserTasteModel } from "../model/UserTaste.model";
-import { UserTasteInput } from "./buildUserPrompt";
+
 
 export async function getUserTaste(userId: string): Promise<UserTasteInput> {
   const doc = await UserTasteModel

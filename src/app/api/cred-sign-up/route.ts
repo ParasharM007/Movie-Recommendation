@@ -1,9 +1,9 @@
 
-import UserModel from "@/src/model/User.modle";
-import dbConnect from "@/src/lib/dbConnect";
+import UserModel from "@/model/User.modle";
+import dbConnect from "@/lib/dbConnect";
 import bcrypt from "bcryptjs";
-import sendVerificationEmail from "@/src/helpers/sendVerification";
-import { apiResponse } from "@/src/lib/apiResponse";
+import sendVerificationEmail from "@/helpers/sendVerification";
+import { apiResponse } from "@/lib/apiResponse";
 
 
 export async function POST(request: Request) {
@@ -11,6 +11,8 @@ export async function POST(request: Request) {
 
   try {
     const { email, password } = await request.json();
+
+    if(!email || ! password ) return apiResponse(false,"Please provide details",400)
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const UserByEmail = await UserModel.findOne({ email });
@@ -51,7 +53,7 @@ export async function POST(request: Request) {
     return  apiResponse(false,EmailResponse?.message,400)
     } else {
       
-      return apiResponse(true,"Email for verification sent successfully",201)
+      return apiResponse(true,"Email for verification sent successfully",201,null)
     }
   } catch (error) {
     console.error("Error in registering the user", error);

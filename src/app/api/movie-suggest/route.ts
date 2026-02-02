@@ -1,146 +1,489 @@
-import { generateRecommendations } from "@/src/lib/groq";
+import { generateRecommendations } from "@/lib/groq";
 import { getServerSession, User } from "next-auth";
 import { authOptions } from "../../../lib/options";
-import { apiResponse } from "@/src/lib/apiResponse";
-import { UserTasteModel } from "@/src/model/UserTaste.model";
-import { getUserTaste } from "@/src/lib/getUserTaste";
-import { UserTasteInput } from "@/src/lib/buildUserPrompt";
-import dbConnect from "@/src/lib/dbConnect";
-import { searchQuerySchema } from "@/src/schemas/searchqueryschema";
-import axios from "axios";
-export async function GET(req: Request) {
+import { apiResponse } from "@/lib/apiResponse";
+import { getUserTaste } from "@/lib/getUserTaste";
 
+import dbConnect from "@/lib/dbConnect";
+import { searchQuerySchema } from "@/schemas/searchqueryschema";
+import axios from "axios";
+import { getHomeData } from "@/lib/getHomeData";
+import { MovieData } from "@/types/MovieData";
+import { UserTasteInput } from "@/types/UserTaste";
+export async function GET(req: Request) {
   let TMDB_BASE_URL = "https://api.themoviedb.org/3";
   let TMDB_API_KEY = process.env.TMDB_API_KEY;
   await dbConnect();
-  
-
-  // User and search query both needed:- 
   try {
-   const { searchParams }=new URL(req.url)
-        const queryParam= {
-           query: searchParams.get("query")
-        }
-   const result = searchQuerySchema.safeParse(queryParam)
- 
-   if(!result.success){
-   return  apiResponse(false,"Do not exceed characters limit 100",400)
-}
-console.log("Result of safeParse ",result)
-
-if(!result.data ||!result.data.query){
- return apiResponse(false,"Something unexpected occured in query validation by zod",400)
-
-}
-      else{
-
-        
-        
-        
-      
-
-  
-    
-  const { query } =result.data
- 
-
-   
-    const session = await getServerSession(authOptions);
-const user: User  = session?.user as User;
-
-if(!session || !user || !user._id || query){
-  // User should be able to search via TMDB search:- TODO
-  async function searchQueryWithTMDB(query:string) {
-  const res = await axios.get(
-  `https://api.themoviedb.org/3/search/multi`,
-  {
-    params: {
-      query: query,
-      api_key: process.env.TMDB_API_KEY,
-    },
-  }
-);
-
-
-  if (!res.data) return null;
-  return res.data.results?.[0] || null; // take best match
-}
-const data= await searchQueryWithTMDB(query)
-
-  
-   return apiResponse(true,"User is searching without login ",200,data)
-  
-}
-else{
-  //Now user is logged in and searching something:- 
-  //we will take user's taste by UserTaste collection:-
-  
-  const userTaste:UserTasteInput =await getUserTaste(user._id)
-  console.log("UserTaste:- ",userTaste)
-  const titles = await generateRecommendations(userTaste,query)
-
-if(!titles.recommendations){
-  
-   return apiResponse(false,"Recommendations are not available",400)
-  
-}
-if(titles.recommendations.length===0){
-   
-   return apiResponse(false,"No Recommendations",400)
-
-}
-//At this point we have recommendations titles, we will just put tmdb search api:- 
-
-
-async function searchTMDB(title: string, type: "movie" | "tv") {
-  const endpoint = type === "movie" ? "search/movie" : "search/tv";
-
-  const res = await axios.get(
-    `${TMDB_BASE_URL}/${endpoint}?query=${encodeURIComponent(title)}&api_key=${TMDB_API_KEY}`
-  );
-
-  if (!res.data) return null;
-  return res.data.results?.[0] || null; // take best match
-}
-
-const tmdbResults = await Promise.all(
-  titles.recommendations.slice(0, 5).map(async (rec:any) => {
-    const tmdbData = await searchTMDB(rec.title, rec.type as "movie" | "tv");
-
-    if (!tmdbData) return null;
-
-    return {
-      id: tmdbData.id,
-      title: tmdbData.title || tmdbData.name,
-      type: rec.type,
-      poster: tmdbData.poster_path,
-      rating: tmdbData.vote_average,
-      overview: tmdbData.overview,
-      reason: rec.reason, // AI personalization
+    const { searchParams } = new URL(req.url);
+    const queryParam = {
+      query: searchParams.get("query") ?? undefined,
     };
-  })
-);
+    const result = searchQuerySchema.safeParse(queryParam);
 
-if(!tmdbResults){
- 
-   return apiResponse(false,"Error in searching data from TMDB ",400)
-   
+    if (!result.success) {
+      return apiResponse(false, "Do not exceed characters limit 100", 400);
+    }
+    let query = result.data.query; // string | undefined
+    console.log("This is the query for ai search ", query);
 
+    const session = await getServerSession(authOptions);
+    const user: User = session?.user as User;
+
+    async function searchQueryWithTMDB(query?: string) {
+      const res = await axios.get(`https://api.themoviedb.org/3/search/multi`, {
+        params: {
+          query: query,
+          api_key: process.env.TMDB_API_KEY,
+        },
+      });
+
+      if (!res.data) return null;
+      return res.data.results?.[0] || null; // take best match
+    }
+    if (!session || !user) {
+      console.log("Sess:- ", session);
+      console.log("user:- ", user);
+
+      // User should be able to search via TMDB search:-
+      if (query) {
+        const data = await searchQueryWithTMDB(query);      //TODO:- write return data type 
+        return apiResponse(true, "User is searching without login ", 200, data);
+      } else {
+        const result:MovieData[] = await getHomeData();   // we r getting data of type MovieData[] 
+
+        if (!result)
+          return apiResponse(
+            false,
+            "error occured in getting home page data via TMDB",
+            400,
+          );
+
+        return apiResponse(
+          true,
+          "Home page data fetched via TMDB",
+          200,
+          result,
+        );
+      }
+    } else {
+      //Now user is logged in and searching something:-
+      //we will take user's taste by UserTaste collection:-
+
+      // if (user._id) {
+        // const userTaste: UserTasteInput = await getUserTaste(user._id);
+      //   console.log("UserTaste:- ", userTaste);
+      //       const titles = await generateRecommendations(userTaste, query);
+      //       console.log("Ai data currently for home page(without query):- ",titles)
+
+        //     //If recommendations are not available , we will just send response to show hardcoded genres by TMDB:-
+        //     if (!titles || titles.aiEmpty) {
+        //       console.log("Searching with TMDB directly ");
+        //       //Case 1:- ai fails during search query:-
+        //       if (query) {
+        //         const data = await searchQueryWithTMDB(query);     //TODO:- write return data type
+        //         return apiResponse(
+        //           true,
+        //           "Ai response failed, searched with TMDB directly ",
+        //           200,
+        //           data,
+        //         );
+        //       } else {
+        //         //Case 2:- ai fails during home page:-
+        //         //We will directly use TMDB api using hardcoded genres :-
+        //         const result:MovieData[] =await getHomeData()
+
+        // if(!result)  return apiResponse(false,"error occured in getting home page data via TMDB",400)
+
+        // return apiResponse(true, "Home page data fetched via TMDB",200,result)
+        //       }
+        //     }
+
+        //At this point we have recommendations titles, we will just put tmdb search api:-
+
+        const titles = {
+          mode: "default",
+          recommendations: [
+            {
+              title: "Action",
+              type: "genre",
+              items: [
+                {
+                  title: "The Dark Knight",
+                  type: "movie",
+                  reason:
+                    "Recommended action movies with intense fight scenes and gripping storylines",
+                },
+                {
+                  title: "Mad Max: Fury Road",
+                  type: "movie",
+                  reason:
+                    "Suggested action movies with high-octane stunts and adrenaline-fueled action",
+                },
+                {
+                  title: "The Avengers",
+                  type: "movie",
+                  reason:
+                    "Based on your interest in superhero movies with epic battles and team-ups",
+                },
+                {
+                  title: "John Wick",
+                  type: "movie",
+                  reason:
+                    "Recommended action movies with stylized fight choreography and intense action sequences",
+                },
+                {
+                  title: "Mission: Impossible - Fallout",
+                  type: "movie",
+                  reason:
+                    "Suggested action movies with thrilling stunts and high-stakes espionage",
+                },
+                {
+                  title: "The Bourne Identity",
+                  type: "movie",
+                  reason:
+                    "Recommended action movies with fast-paced action and a gripping mystery",
+                },
+              ],
+            },
+            {
+              title: "Comedy",
+              type: "genre",
+              items: [
+                {
+                  title: "The Hangover",
+                  type: "movie",
+                  reason:
+                    "Recommended comedies with outrageous humor and memorable characters",
+                },
+                {
+                  title: "Superbad",
+                  type: "movie",
+                  reason:
+                    "Suggested comedies with relatable coming-of-age themes and hilarious dialogue",
+                },
+                {
+                  title: "The 40-Year-Old Virgin",
+                  type: "movie",
+                  reason:
+                    "Based on your interest in comedies with quirky characters and awkward humor",
+                },
+                {
+                  title: "Bridesmaids",
+                  type: "movie",
+                  reason:
+                    "Recommended comedies with female-led casts and hilarious ensemble performances",
+                },
+                {
+                  title: "Monty Python and the Holy Grail",
+                  type: "movie",
+                  reason:
+                    "Suggested comedies with absurd humor and medieval parody",
+                },
+                {
+                  title: "Airplane!",
+                  type: "movie",
+                  reason:
+                    "Recommended comedies with rapid-fire jokes and slapstick humor",
+                },
+              ],
+            },
+            {
+              title: "Drama",
+              type: "genre",
+              items: [
+                {
+                  title: "The Shawshank Redemption",
+                  type: "movie",
+                  reason:
+                    "Recommended dramas with powerful storytelling and emotional depth",
+                },
+                {
+                  title: "The Social Network",
+                  type: "movie",
+                  reason:
+                    "Suggested dramas with gripping true stories and complex characters",
+                },
+                {
+                  title: "12 Years a Slave",
+                  type: "movie",
+                  reason:
+                    "Based on your interest in dramas that tackle difficult subjects with sensitivity and nuance",
+                },
+                {
+                  title: "The Pursuit of Happyness",
+                  type: "movie",
+                  reason:
+                    "Recommended dramas with inspiring true stories and uplifting messages",
+                },
+                {
+                  title: "Schindler's List",
+                  type: "movie",
+                  reason:
+                    "Suggested dramas that explore historical events with thought-provoking themes",
+                },
+                {
+                  title: "The Pianist",
+                  type: "movie",
+                  reason:
+                    "Recommended dramas with powerful performances and emotional resonance",
+                },
+              ],
+            },
+            {
+              title: "Horror",
+              type: "genre",
+              items: [
+                {
+                  title: "The Shining",
+                  type: "movie",
+                  reason:
+                    "Recommended horror movies with classic atmosphere and psychological tension",
+                },
+                {
+                  title: "The Exorcist",
+                  type: "movie",
+                  reason:
+                    "Suggested horror movies with chilling supernatural themes and intense scares",
+                },
+                {
+                  title: "The Texas Chain Saw Massacre",
+                  type: "movie",
+                  reason:
+                    "Based on your interest in horror movies with raw intensity and graphic violence",
+                },
+                {
+                  title: "Halloween",
+                  type: "movie",
+                  reason:
+                    "Recommended horror movies with iconic villains and suspenseful storytelling",
+                },
+                {
+                  title: "The Ring",
+                  type: "movie",
+                  reason:
+                    "Suggested horror movies with eerie atmosphere and supernatural mystery",
+                },
+                {
+                  title: "Get Out",
+                  type: "movie",
+                  reason:
+                    "Recommended horror movies with social commentary and psychological complexity",
+                },
+              ],
+            },
+            {
+              title: "Romance",
+              type: "genre",
+              items: [
+                {
+                  title: "Titanic",
+                  type: "movie",
+                  reason:
+                    "Recommended romance movies with epic love stories and memorable performances",
+                },
+                {
+                  title: "The Notebook",
+                  type: "movie",
+                  reason:
+                    "Suggested romance movies with sweeping romance and emotional depth",
+                },
+                {
+                  title: "La La Land",
+                  type: "movie",
+                  reason:
+                    "Based on your interest in romance movies with musical numbers and romantic fantasy",
+                },
+                {
+                  title: "The Proposal",
+                  type: "movie",
+                  reason:
+                    "Recommended romance movies with witty banter and comedic chemistry",
+                },
+                {
+                  title: "Crazy, Stupid, Love.",
+                  type: "movie",
+                  reason:
+                    "Suggested romance movies with relatable characters and heartfelt moments",
+                },
+                {
+                  title: "When Harry Met Sally",
+                  type: "movie",
+                  reason:
+                    "Recommended romance movies with classic dialogue and romantic development",
+                },
+              ],
+            },
+            {
+              title: "Science Fiction",
+              type: "genre",
+              items: [
+                {
+                  title: "Blade Runner",
+                  type: "movie",
+                  reason:
+                    "Recommended science fiction movies with thought-provoking themes and philosophical questions",
+                },
+                {
+                  title: "The Matrix",
+                  type: "movie",
+                  reason:
+                    "Suggested science fiction movies with innovative special effects and complex action sequences",
+                },
+                {
+                  title: "Inception",
+                  type: "movie",
+                  reason:
+                    "Based on your interest in science fiction movies with mind-bending plots and visual spectacle",
+                },
+                {
+                  title: "Interstellar",
+                  type: "movie",
+                  reason:
+                    "Recommended science fiction movies with epic scope and scientific accuracy",
+                },
+                {
+                  title: "Arrival",
+                  type: "movie",
+                  reason:
+                    "Suggested science fiction movies with thought-provoking themes and emotional resonance",
+                },
+                {
+                  title: "Her",
+                  type: "movie",
+                  reason:
+                    "Recommended science fiction movies with nuanced exploration of human relationships and technology",
+                },
+              ],
+            },
+            {
+              title: "Thriller",
+              type: "genre",
+              items: [
+                {
+                  title: "Se7en",
+                  type: "movie",
+                  reason:
+                    "Recommended thrillers with dark atmosphere and intense suspense",
+                },
+                {
+                  title: "Memento",
+                  type: "movie",
+                  reason:
+                    "Suggested thrillers with complex storytelling and mind-bending plot twists",
+                },
+                {
+                  title: "Shutter Island",
+                  type: "movie",
+                  reason:
+                    "Based on your interest in thrillers with atmospheric settings and psychological complexity",
+                },
+                {
+                  title: "The Silence of the Lambs",
+                  type: "movie",
+                  reason:
+                    "Recommended thrillers with chilling villains and intense cat-and-mouse chases",
+                },
+                {
+                  title: "Fight Club",
+                  type: "movie",
+                  reason:
+                    "Suggested thrillers with subversive themes and social commentary",
+                },
+                {
+                  title: "Gone Girl",
+                  type: "movie",
+                  reason:
+                    "Recommended thrillers with twisty plots and complex characters",
+                },
+              ],
+            },
+          ],
+        };
+
+        if (titles) {
+          async function searchTMDB(title: string, type: "movie" | "tv") {
+            const endpoint = type === "movie" ? "search/movie" : "search/tv";
+
+            const res = await axios.get(
+              `${TMDB_BASE_URL}/${endpoint}?query=${encodeURIComponent(title)}&api_key=${TMDB_API_KEY}`,
+            );
+
+            if (!res.data) return null;
+            return res.data.results?.[0] || null; // take best match
+          }
+
+          let tmdbResults: MovieData[];
+
+          if (query) {
+            const rawResults: (MovieData | null)[] = await Promise.all(
+              titles.recommendations.slice(0, 5).map(async (rec: any) => {
+                const tmdbData: any = await searchTMDB(
+                  rec.title,
+                  rec.type as "movie" | "tv",
+                );
+
+                if (!tmdbData) return null;
+
+                return {
+                  id: tmdbData.id,
+                  title: tmdbData.title || tmdbData.name,
+                  genre: rec.title,
+                  poster: tmdbData.poster_path
+                    ? `https://image.tmdb.org/t/p/w500${tmdbData.poster_path}`
+                    : null,
+                  rating: tmdbData.vote_average ?? null,
+                  overview: tmdbData.overview ?? "",
+                  reason: rec.reason ?? null,
+                };
+              }),
+            );
+
+            tmdbResults = rawResults.filter(
+              (movie): movie is MovieData => movie !== null,
+            );
+          } else {
+            //if query is not defined or  available:-
+            const rawResults: (MovieData | null)[] = await Promise.all(
+              titles.recommendations.flatMap((rec: any) =>
+                rec.items.map(async (item: any) => {
+                  const tmdbData: any = await searchTMDB(
+                    `${item.title}`,
+                    item.type as "movie" | "tv",
+                  );
+                  if (!tmdbData) return null;
+
+                  return {
+                    id: tmdbData.id,
+                    title: tmdbData.title || tmdbData.name,
+                    genre: rec.title,
+                    poster: tmdbData.poster_path,
+                    rating: tmdbData.vote_average,
+                    overview: tmdbData.overview,
+                    reason: item.reason, // AI personalization
+                  };
+                }),
+              ),
+            );
+            tmdbResults = rawResults.filter(
+              (movie): movie is MovieData => movie !== null,
+            );
+          }
+          if (tmdbResults.length === 0) {
+            return apiResponse(false, "No movies found from TMDB after ai suggestions", 404);
+          }
+
+          return apiResponse(
+            true,
+            "AI based recommendations fetched according to search",
+            200,
+            tmdbResults,
+          );
+        }
+      }
+    }
+  catch (error) {
+    console.error("An unexpected error occured!" + error);
+    throw error;
   }
-
-
-  return  apiResponse(true, "Recommendations fetched according to search",200,tmdbResults)
-    
-}
-
-
-  }
-
-
-} catch (error) {
-  
-  console.error("An unexpected error occured!"+ error)
-  throw error
-  
-}
 }

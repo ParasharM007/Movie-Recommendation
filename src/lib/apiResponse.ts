@@ -10,12 +10,14 @@ export function apiResponse<T>(
   message: string,
   status: number,
   data?: T,
+  isVerified?:boolean
 ): Response {
   return Response.json(
     {
       success,
       message,
       data,
+      isVerified
     },
     { status }
   );

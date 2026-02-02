@@ -1,12 +1,12 @@
 
-import dbConnect from "@/src/lib/dbConnect";
-import UserModel from "@/src/model/User.modle";
+
 import bcrypt from "bcryptjs";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import DiscordProvider from "next-auth/providers/discord";
-import { apiResponse } from "./apiResponse";
+import dbConnect from "./dbConnect";
+import UserModel from "@/model/User.modle";
 
 export const authOptions:NextAuthOptions = {
   providers: [
@@ -43,8 +43,12 @@ export const authOptions:NextAuthOptions = {
           if(!isPasswordCorrect){
             throw new Error("Incorrect Password")
           }
-      return user
-        
+//      return {
+//   _id: user._id.toString(),  
+//   email: user.email,
+// }
+return user 
+
 
       } catch (error:any) {
         throw new Error(error)
@@ -56,8 +60,8 @@ export const authOptions:NextAuthOptions = {
 
 
   GoogleProvider({
-   clientId: process.env.GOOGLE_CLIENT_ID!,
-   clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+   clientId:process.env.GOOGLE_CLIENT_ID!,
+   clientSecret:process.env.GOOGLE_CLIENT_SECRET!,
  }),
 
 
@@ -69,7 +73,9 @@ export const authOptions:NextAuthOptions = {
 callbacks: {
 
   async signIn({ user, account }) {
+    await dbConnect()
      if (!account) return true 
+     console.log("Provider in sign method:- ",account.provider)
     if (account?.provider !== "credentials") {
       const existingUser = await UserModel.findOne({ email: user.email });
 
@@ -85,22 +91,21 @@ callbacks: {
   },
 
   async jwt({ token, user }) {
-    
-    if (user) {
-      token._id = user._id?.toString();
+  await dbConnect();
+
+  // First time sign-in (OAuth or credentials)
+  if (user?.email) {
+    const dbUser = await UserModel.findOne({ email: user.email });
+
+    if (dbUser) {
+      token._id = dbUser._id.toString();
+      token.isVerified = dbUser.isVerified;
     }
+  }
 
-
-    if (token._id) {
-      const dbUser = await UserModel.findById(token._id);
-
-      if (dbUser) {
-        token.isVerified = dbUser.isVerified;
-      }
-    }
-
-    return token;
-  },
+  return token;
+}
+,
 
   async session({ session, token }) {
     if (token && session.user) {
@@ -113,6 +118,7 @@ callbacks: {
 
 pages:{
   signIn:'/sign-in',
+  error:'/next-error'
 },
 session:{
   strategy:'jwt'

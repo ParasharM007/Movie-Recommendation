@@ -1,7 +1,7 @@
-import { apiResponse } from "@/src/lib/apiResponse";
-import dbConnect from "@/src/lib/dbConnect";
-import { authOptions } from "@/src/lib/options";
-import UserModel from "@/src/model/User.modle";
+import { apiResponse } from "@/lib/apiResponse";
+import dbConnect from "@/lib/dbConnect";
+import { authOptions } from "@/lib/options";
+import UserModel from "@/model/User.modle";
 import bcrypt from "bcryptjs";
 import { Document } from "mongoose";
 import { User } from "next-auth";
@@ -42,8 +42,14 @@ export async function POST(req:Request) {
          const hashPassword =await bcrypt.hash(newPassword,10)
          findUser.password = hashPassword
          await findUser.save()
-         const userObject = findUser.toObject()
-         delete userObject.password
+         
+        //  const userObject = findUser.toObject()
+        // delete userObject.password
+         const userObject = {
+            id:findUser._id.toString(),
+            email:findUser.email
+
+         }
          return apiResponse(true,"Password changed successfully",200,userObject)
 
     } catch (error) {

@@ -1,22 +1,20 @@
-import { apiResponse } from "@/src/lib/apiResponse";
-import dbConnect from "@/src/lib/dbConnect";
-import { authOptions } from "@/src/lib/options";
-import UserModel from "@/src/model/User.modle";
+import { apiResponse } from "@/lib/apiResponse";
+import dbConnect from "@/lib/dbConnect";
+import UserModel from "@/model/User.modle";
 import bcrypt from "bcryptjs";
-import { getServerSession, User } from "next-auth";
+
 
 export async function POST(req:Request) {
     await dbConnect()
    try {
-     const { password , otp } = await req.json()
-     const session = await getServerSession(authOptions)
-     const user:User = session?.user as User
+     const { email , password , otp } = await req.json()
+    
  
-     const findUser  = await UserModel.findById(user._id)
+     const findUser  = await UserModel.findOne({email})
      if(!findUser){
          return apiResponse(false,"User not found",400)
      }
- 
+    console.log("User jfwojef:- ",findUser)
      const isCodeValid = new Date(findUser.verifyCodeExpiry) > new Date() 
      const isCodeCorrect= findUser.verifyCode === otp
  
@@ -28,8 +26,11 @@ export async function POST(req:Request) {
      const hashedPassword = await bcrypt.hash(password,10)
      findUser.password=hashedPassword
      await findUser.save()
-     const updatedUser = findUser.toObject()
-     delete updatedUser.password
+     
+     const updatedUser = {
+        id:findUser._id.toString(),
+        email:findUser.email
+     }
      
      return apiResponse(true,"Password set successfully",200,updatedUser)
   

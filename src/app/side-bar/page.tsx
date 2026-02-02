@@ -1,0 +1,117 @@
+'use client'
+import { useEffect, useState } from "react";
+import { Home, Search, Grid, User, Menu } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
+export default function Sidebar() {
+  const { status } = useSession();
+
+  const [open, setOpen] = useState(false);
+  const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  
+
+  // to detect device 
+  useEffect(() => {
+    const checkDevice = () => {
+      const width = window.innerWidth;
+      if (width >= 1024) setDevice("desktop");
+      else if (width >= 768) setDevice("tablet");
+      else setDevice("mobile");
+    };
+
+    checkDevice();
+    window.addEventListener("resize", checkDevice);
+    return () => window.removeEventListener("resize", checkDevice);
+  }, []);
+
+  const isDesktop = device === "desktop";
+  const isTablet = device === "tablet";
+  const isMobile = device === "mobile";
+
+  return (
+    <>
+      
+      {isMobile && !open && (
+   <button
+    className="fixed top-4 left-4 z-50 text-white 
+              h-12 w-12  rounded-full 
+             flex items-center justify-center " 
+    onClick={(e) => {
+      e.stopPropagation();
+      setOpen(true);
+    }}
+  >
+    <Menu size={28} />
+  </button>
+)}
+      
+      <div
+        onClick={() => setOpen(false)}
+        className={`fixed inset-0 z-40 backdrop-blur-sm bg-black/30
+        transition-opacity duration-300
+        ${open ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+      />
+
+      
+      <div
+        className={`fixed left-0 top-0 h-screen z-50 flex flex-col gap-8 p-4
+        bg-gradient-to-r from-black/70 to-transparent
+        transition-all duration-300 ease-in-out
+        ${open ? "w-52" : "w-16"}
+        ${isMobile && !open ? "-translate-x-full" : "translate-x-0"}`}
+        onMouseEnter={isDesktop ? () => setOpen(true) : undefined}
+        onMouseLeave={isDesktop ? () => setOpen(false) : undefined}
+       onClick={
+  isTablet
+    ? (e) => {
+        e.stopPropagation();
+        setOpen(prev => !prev);
+      }
+    : undefined
+}
+        
+      >
+        <NavItem icon={<Home size={24}  />} path="/" label="Home" show={open} />
+        <NavItem icon={<Search size={24}/>}  path="/search-page" label="Search" show={open} />
+        <NavItem icon={<Grid size={24} />}  path="/categories" label="Categories" show={open} />
+        <NavItem
+          icon={<User size={24}  />} 
+          path={status === "authenticated" ? "/profile" : "/sign-in"} //TODO:-profile id in params
+          label={status === "authenticated" ? "Profile" : "Sign in"}
+          show={open}
+        />
+      </div>
+    </>
+  );
+}
+
+function NavItem({
+  label,
+  show,
+  icon,
+  path
+}: {
+  label: string;
+  show: boolean;
+  icon: React.ReactNode;
+  path:string
+}) {
+  const router= useRouter()
+  
+  return (
+    <div className="flex items-center gap-4 text-white cursor-pointer" 
+    onClick={()=>router.push(path)}
+    >
+      <div className="flex-shrink-0">{icon}</div>
+
+      <span
+        className={`whitespace-nowrap text-lg font-medium
+        transition-all duration-300 ease-in-out
+        ${show ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2"}`}
+      >
+        {label}
+      </span>
+    </div>
+  );
+}

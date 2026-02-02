@@ -1,6 +1,8 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
 import "./globals.css";
 import AuthProvider from "./context/AuthProvider";
+import { Toaster } from "sonner";
+
 
 
 export default function RootLayout({
@@ -11,13 +13,14 @@ export default function RootLayout({
   
   return (
     <html lang="en">
-      <body>
+      <body className="bg-black">
 
         <AuthProvider>
          
 
         {children}
          
+        <Toaster />
         </AuthProvider>
       </body>
     </html>

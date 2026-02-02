@@ -10,9 +10,9 @@
 //     favorites:string[],
 //     watchlist:string[],    
 //     recentlyLiked:string[] 
-export interface ExpectedResponse {
+export interface ExpectedResponse<T> {
     success:boolean,
     message:string,
     isVerified?:boolean,
-    data?: Array<String>
+    data?: T
 }

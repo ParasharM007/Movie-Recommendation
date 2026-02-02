@@ -1,6 +1,6 @@
 
-import VerificationEmail from "@/emails/VerificationEmail";
-import { ExpectedResponse } from "../types/ExpectedResponse";
+
+import VerificationEmail from "emails/VerificationEmail";
 import { resend } from "../lib/resend";
 
 
@@ -8,13 +8,13 @@ import { resend } from "../lib/resend";
 export  default async function sendVerificationEmail(
     email:string,
     verifyCode:string
-):Promise<ExpectedResponse>{
+){
     try {
     const result = await resend.emails.send({
       from: "Movie Recommendation <onboarding@resend.dev>",
       to: [email],
       subject: 'Movie Recommendation | Verification Email',
-         react: <VerificationEmail otp={verifyCode} />,
+         react: <VerificationEmail otp={verifyCode} email={email} />,
       
       
 

@@ -1,9 +1,9 @@
 
 //Todo:- add zod validation for verify code too.
 
-import { apiResponse } from "@/src/lib/apiResponse";
-import dbConnect from "@/src/lib/dbConnect";
-import UserModel from "@/src/model/User.modle";
+import { apiResponse } from "@/lib/apiResponse";
+import dbConnect from "@/lib/dbConnect";
+import UserModel from "@/model/User.modle";
 
 
 export async function POST(request: Request) {
@@ -24,7 +24,10 @@ export async function POST(request: Request) {
     if(isCodeValid && isCodeNotExpired){
         user.isVerified = true
         await user.save()
-       return apiResponse(true,"Acccount Verified Successfully",200)
+        const userDTO={
+          isVerified: true
+        }
+       return apiResponse(true,"Acccount Verified Successfully",200,userDTO)
     }
     else if(!isCodeNotExpired){
     return apiResponse(false,"Verification code has been expired, please sign up again to get new code",400)  

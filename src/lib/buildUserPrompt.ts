@@ -1,11 +1,4 @@
-export type UserTasteInput  = {
-  userId:string ,
-  likedGenres: string[];
-  recentlyLiked: string[];
-  favorites: string[];
-  alreadyWatched: string[];
-  watchlist: string[];
-};
+import { UserTasteInput } from "@/types/UserTaste";
 
 export function buildUserPrompt(
   user?: UserTasteInput ,
@@ -31,7 +24,7 @@ ${
   hasSearch
     ? `- Recommend EXACTLY 5 movies or TV series that best match the search intent.
        - Search relevance must be prioritized over genre.`
-    : `- For EACH genre in Preferred Genres, recommend EXACTLY 10 movies or TV series.
+    : `- For EACH genre in Preferred Genres, recommend EXACTLY 6 movies or TV series.
        - These recommendations will be shown as separate genre sections on the homepage.`
 }
 `;
