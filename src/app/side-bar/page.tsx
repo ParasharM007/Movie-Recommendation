@@ -5,7 +5,13 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function Sidebar() {
-  const { status } = useSession();
+  const { status, data } = useSession();
+  let userId
+  if(data){
+    console.log("Data in session ",data)
+      userId=  data.user._id
+
+  } 
 
   const [open, setOpen] = useState(false);
   const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
@@ -77,7 +83,7 @@ export default function Sidebar() {
         <NavItem icon={<Grid size={24} />}  path="/categories" label="Categories" show={open} />
         <NavItem
           icon={<User size={24}  />} 
-          path={status === "authenticated" ? "/profile" : "/sign-in"} //TODO:-profile id in params
+          path={status === "authenticated" ? `/profile/${userId}` : "/sign-in"} //TODO:-profile id in params
           label={status === "authenticated" ? "Profile" : "Sign in"}
           show={open}
         />
