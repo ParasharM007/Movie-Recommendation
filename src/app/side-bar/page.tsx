@@ -68,24 +68,25 @@ export default function Sidebar() {
         ${isMobile && !open ? "-translate-x-full" : "translate-x-0"}`}
         onMouseEnter={isDesktop ? () => setOpen(true) : undefined}
         onMouseLeave={isDesktop ? () => setOpen(false) : undefined}
-       onClick={
-  isTablet
-    ? (e) => {
-        e.stopPropagation();
-        setOpen(prev => !prev);
-      }
-    : undefined
-}
+//        onClick={
+//   isTablet
+//     ? (e) => {
+//         e.stopPropagation();
+//         setOpen(prev => !prev);
+//       }
+//     : undefined
+// }
         
       >
-        <NavItem icon={<Home size={24}  />} path="/" label="Home" show={open} />
-        <NavItem icon={<Search size={24}/>}  path="/search-page" label="Search" show={open} />
-        <NavItem icon={<Grid size={24} />}  path="/categories" label="Categories" show={open} />
+        <NavItem icon={<Home size={24}  />} path="/" label="Home" show={open} setOpen={setOpen} />
+        <NavItem icon={<Search size={24}/>}  path="/search-page" label="Search" show={open} setOpen={setOpen} />
+        <NavItem icon={<Grid size={24} />}  path="/categories" label="Categories" show={open} setOpen={setOpen} />
         <NavItem
           icon={<User size={24}  />} 
-          path={status === "authenticated" ? `/profile/${userId}` : "/sign-in"} //TODO:-profile id in params
+          path={status === "authenticated" ? `/profile/${userId}` : "/sign-in"} 
           label={status === "authenticated" ? "Profile" : "Sign in"}
           show={open}
+          setOpen={setOpen}
         />
       </div>
     </>
@@ -96,18 +97,27 @@ function NavItem({
   label,
   show,
   icon,
-  path
+  path,
+  setOpen
 }: {
   label: string;
   show: boolean;
   icon: React.ReactNode;
-  path:string
+  path:string;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const router= useRouter()
   
   return (
     <div className="flex items-center gap-4 text-white cursor-pointer" 
-    onClick={()=>router.push(path)}
+    onClick={(e)=>
+     {  e.stopPropagation(); 
+       router.push(path)
+       setOpen(false)
+       
+       
+    } 
+    }
     >
       <div className="flex-shrink-0">{icon}</div>
 

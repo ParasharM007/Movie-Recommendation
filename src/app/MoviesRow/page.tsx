@@ -9,7 +9,7 @@ export default function MoviesRow({ movies }: any) {
         {(movies || []).map((movie: any) => (
           <div
             key={movie.id}
-            className="min-w-[160px] hover:scale-105 transition-transform"
+            className="min-w-[160px] hover:scale-105 cursor-pointer transition-transform"
             onClick={()=>router.push(`/movie-details/${movie.id}`)}
           >
             <img

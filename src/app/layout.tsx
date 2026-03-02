@@ -2,6 +2,7 @@
 import "./globals.css";
 import AuthProvider from "./context/AuthProvider";
 import { Toaster } from "sonner";
+import Sidebar from "./side-bar/page";
 
 
 
@@ -17,7 +18,7 @@ export default function RootLayout({
 
         <AuthProvider>
          
-
+       <Sidebar />
         {children}
          
         <Toaster />

@@ -1,42 +1,71 @@
 "use client";
 
 import  { useEffect, useMemo, useState } from "react";
-import axios from "axios";
-import { Play, Star } from "lucide-react";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { Loader2, Play, Star } from "lucide-react";
 import { useParams } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { ExpectedResponse } from "@/types/ExpectedResponse";
+import { toast } from "sonner";
 
 export default function MovieDetailsPage() {
   const [Id, setId] = useState<string>(""); // default: Avengers Infinity War :-299536
   const [movie, setMovie] = useState<any>({});
   const [videos, setVideos] = useState<any>({});
   const [credits ,setCredits]=useState<any>({})
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
    const { id } =useParams<{ id: string }>();
     if(!id){
       return <h1>Couldn't find movie id</h1>
     }
+   type ErrorType={
+    message:string
+  }
+  type MovieDetails={
+    movies:any,
+    videos:{results:undefined},
+    credits:undefined
+  }
+ const mutation = useMutation<
+  ExpectedResponse<MovieDetails>,
+  AxiosError<ErrorType>,
+  string
+  >({
+   mutationFn:async()=>{
+     const res: AxiosResponse = await axios.get(`/api/movie-data?id=${id}`)
+        
+        
+       const value = res.data ?? [];
+       return value
+   }
+  })
+  const fetchMovie = async () => {
+  
+    try {
       
 
-  const fetchMovie = async () => {
-    setLoading(true);
-    setError("");
+      mutation.mutate(id,{
+        
+        onSuccess:(value)=>{
+          console.log("Movie Data:-  ",value)
+          setMovie(value.data?.movies);
+          setVideos(value.data?.videos?.results)
+          setCredits(value.data?.credits)
+         
+        },
+        onError:(err)=>{
+          toast.error("Failed to load movie details.",{
+            description:err.response?.data.message ||"something went wrong"
+          })
+          setError("Failed to load movie details.")
+        }
+      })
 
-    try {
-      const [res] = await Promise.all([
-        axios.get(`/api/movie-data?id=${id}`),
-      ]);
-        console.log("Here is Movie Data in frontend ",res.data.data)
-      setMovie(res.data.data.movies);
-      setVideos(res.data.data.videos.results)
-      setCredits(res.data.data.credits)
       
     } catch (err) {
-      setError("Failed to load movie details.")
+      setError("Something went wrong.")
       
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -82,16 +111,16 @@ export default function MovieDetailsPage() {
 
       <main className="mx-auto max-w-5xl px-4 py-10">
         
-        {/* Error */}
+        
         {error ? (
           <div className="mb-6 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-100">
-            {error}
+            {error} 
           </div>
         ) : null}
 
-        {/* Loading */}
-        {loading ? (
-          <p className="text-white/70">Loading movie details...</p>
+        
+        {mutation.isPending ? (
+          <div className="flex"><p className="text-white/70">Loading movie details... </p> <Loader2 className="animate-spin mx-3"/></div>
         ) : movie ? (
           <section className="grid grid-cols-1 gap-8 md:grid-cols-[380px_1fr]">
             {/* Poster */}

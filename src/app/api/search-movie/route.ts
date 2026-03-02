@@ -87,7 +87,7 @@ export async function GET(req: Request) {
   
 
         //We have to search ai given titles via tmdb:-
-        if (titles) {
+        if (!titles.aiEmpty) {
           const res = await Promise.allSettled(
             titles.recommendations.slice(0, 5).map(async (rec: any) => {
               const data: MovieData[] | null = await searchQueryWithTMDB(rec?.title, rec?.reason);
@@ -104,7 +104,7 @@ export async function GET(req: Request) {
 
             }
         })
-          console.log("raw results ogosn",rawResults)
+          console.log("raw results ",rawResults)
           const flattened: (MovieData[] | null)[] = rawResults.flatMap((movie:any) => (movie ? movie : []));
 
           const seen = new Set<number>();
@@ -122,7 +122,7 @@ export async function GET(req: Request) {
             return apiResponse(
               false,
               "No movies found from TMDB after ai suggestions",
-              404,
+              400,
             );
           }
 
@@ -140,27 +140,36 @@ export async function GET(req: Request) {
           console.log("Searching with TMDB directly ");
 
 
-          const data: MovieData[] | null = await searchQueryWithTMDB(query);
-          console.log("Data:-  ", data);
-          if (!data || !data.length)
-            return apiResponse(false, "Couldn't find movie", 400);
-          if (data.length === 0)
-            return apiResponse(
-              true,
-              "Didn't find any movie with this query",
-              200,
-            );
-          return apiResponse(
-            true,
-            "Ai response failed, searched with TMDB directly ",
-            200,
-            data,
-          );
+         try {
+           const data: MovieData[] | null = await searchQueryWithTMDB(query);
+           console.log("Data:-  ", data);
+           if (!data || !data.length)
+             return apiResponse(false, "Couldn't find movie", 400);
+           if (data.length === 0)
+             return apiResponse(
+               true,
+               "Didn't find any movie with this query",
+               200,
+             );
+             return apiResponse(
+               true,
+               "Ai response failed, searched with TMDB directly ",
+               200,
+               data,
+             );
+         } catch (error) {
+           return apiResponse(false, "Couldn't find movie", 400);
+          
+         }
         }
       
     }
   }
-  } catch {
+  
+
+
+
+} catch {
     return apiResponse(false, "Something went wrong", 500);
   }
 }

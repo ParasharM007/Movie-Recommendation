@@ -1,6 +1,8 @@
 "use client";
 import { ExpectedResponse } from "@/types/ExpectedResponse";
-import axios, { AxiosResponse } from "axios";
+import { useMutation } from "@tanstack/react-query";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -13,6 +15,27 @@ const page = () => {
 
   const token = useSession();
   if (token) console.log("Token ", token.status);
+
+   type ErrorType={
+    message:string
+  }
+
+  const mutation = useMutation<
+  ExpectedResponse<any>,
+  AxiosError<ErrorType>,
+  string
+  >({
+   mutationFn:async()=>{
+     const res: AxiosResponse = await axios.get(
+        `/api/search-movie?query=${query}`,
+      );
+        
+        
+       const value = res.data?? [];
+       return value
+   }
+  })
+
   const aiResponse = async () => {
     
      if (!query) {
@@ -23,34 +46,43 @@ const page = () => {
     
   }
 
+ 
     if (query) {
       try {
-      const res: AxiosResponse = await axios.get(
-        `/api/search-movie?query=${query}`,
-      );
-        
-        
-       const value = res.data?.data ?? [];
-       setRecommendations(Array.isArray(value) ? value : [value]);
+      mutation.mutate(query,{
+        onSuccess:(value)=>{
+          toast.success("Data fetched successfully",{
+            description:value.message || ""
+          })
+          setRecommendations(Array.isArray(value.data) ? value.data : [value.data]);
+        },
+        onError:(err)=>{
+            toast.error("Error during searching data",
+              {
+                description:err.response?.data.message || "error occured"
+              }
+            )
+        },
+       
+      })
 
 
       } catch (error) {
         toast.error("Error in getting data", {
-          description: "error in assigning recommedations",
+          description: "something went wrong while searching data",
         });
       }
     }
   };
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black via-black/10 to-transparent z-10" /> */}
 
       <div className="relative z-20 h-full flex flex-col items-center justify-center px-4">
         <h1 className="text-4xl md:text-5xl font-bold m-10 text-center">
           Search Movies
         </h1>
 
-        <div className="w-full max-w-2xl">
+        <div className="flex align-middle justify-center w-full max-w-2xl">
           <input
             type="text"
             placeholder="Search by title, genre, mood..."
@@ -60,6 +92,7 @@ const page = () => {
                          focus:border-purple-500 transition"
             onChange={(e)=>setQuery(e.target.value)}
           />
+           {!mutation.isPending ? (<button className="text-white m-1 p-2 px-5 cursor-pointer border rounded-full border-gray-100" onClick={aiResponse}>Search</button>):(<Loader2  className="animate-spin m-1 mt-3 "/>)}
         </div>
         <div
           className="flex items-center justify-between
@@ -72,9 +105,9 @@ const page = () => {
         </div>
       </div>
 
-      <section className="px-6 md:px-12 mt-10">
+      <section className=" flex flex-col items-center px-6 md:px-12 mt-10">
+       
         <h2 className="text-2xl font-semibold mb-6">Search Results</h2>
-        <button className="text-white m-5 p-3 border border-gray-200" onClick={aiResponse}>click me </button>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {recommendations.map((movie:any, index:any) => (
@@ -86,7 +119,7 @@ const page = () => {
                          transition cursor-pointer"
                          onClick={()=>router.push(`/movie-details/${movie.id}`)}
             >
-              {/* poster */}
+              
               <img
                 src={movie.poster}
                 alt="movie poster"
@@ -94,7 +127,7 @@ const page = () => {
                 
               />
 
-              {/* details */}
+              
               <div className="flex flex-col justify-between">
                 <div>
                   <h3 className="text-lg font-semibold">

@@ -332,7 +332,7 @@ const uniqueMovies = movies.filter(movie => {
     console.log("This is the genre vise movies: ", moviesByGenre);
   return (
     <main className="bg-black text-white  min-h-screen">
-      <Sidebar />
+      {/* <Sidebar /> */}
       <HeroBanner />
 
       {
