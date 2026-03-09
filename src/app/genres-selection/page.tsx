@@ -105,7 +105,7 @@ export default function GenreSelection() {
               key={genre}
               onClick={() => toggleGenre(genre)}
               className={`
-                w-24 h-24 rounded-full flex items-center justify-center text-sm font-semibold
+                w-24 h-24 rounded-full flex items-center justify-center cursor-pointer text-sm font-semibold
                 transition-all duration-300
                 ${
                   isSelected
@@ -119,8 +119,9 @@ export default function GenreSelection() {
             </button>
           );
         })}
-        <button onClick={handleGenresSubmission}>Submit</button>
       </div>
+        <button  className="p-2 m-5 rounded-lg flex items-center justify-center cursor-pointer text-sm font-semibold 
+                 bg-gray-600 scale-110 shadow-lg shadow-gray-500/50 " onClick={handleGenresSubmission}>Submit</button>
     </div>
   );
 }

@@ -107,10 +107,10 @@ const page = () => {
 
       <section className=" flex flex-col items-center px-6 md:px-12 mt-10">
        
-        <h2 className="text-2xl font-semibold mb-6">Search Results</h2>
+        {recommendations.length!==0 && <h2 className="text-2xl font-semibold mb-6">Search Results</h2>}
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {recommendations.map((movie:any, index:any) => (
+          {recommendations.length!==0 &&  recommendations.map((movie:any, index:any) => (
             <div
               key={index}
               className="flex gap-4 bg-neutral-900/60
