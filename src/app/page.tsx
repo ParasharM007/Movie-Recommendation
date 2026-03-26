@@ -5,11 +5,12 @@ import { useSession } from "next-auth/react";
 import { ExpectedResponse } from "../types/ExpectedResponse";
 import HeroBanner from "./HeroBanner/page";
 import MoviesRow from "./MoviesRow/page";
-import { SkeletonCard } from "./skeletonCard.tsx/page";
+
 import { useMemo } from "react";
 import { MovieData } from "@/types/MovieData";
 import { Loader2 } from "lucide-react";
 import Sidebar from "./side-bar/page";
+import SkeletonCard from "./skeletonCard.tsx/page";
 
 export default function Home() {
   const { data: session } = useSession();
