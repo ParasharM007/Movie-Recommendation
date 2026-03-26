@@ -1,47 +1,32 @@
 'use client'
 import { useEffect, useState } from "react";
-import { useDebounceCallback, useDebounceValue } from 'usehooks-ts'
+import { useDebounceValue } from 'usehooks-ts'
 
 import { SortDropdown } from "./SortDropdown";
 import FilterSidebar from "./FilterSideBar";
 import MoviesRow from "../MoviesRow/page";
 import { useQuery } from "@tanstack/react-query";
-import axios, { AxiosError, AxiosResponse } from "axios";
+import axios, { AxiosError } from "axios";
 import { ExpectedResponse } from "@/types/ExpectedResponse";
 import MoviesGrid from "../MoviesGrid/page";
 
-//   const buildQuery = (filters: any, sort: string) => {
-//   const params = new URLSearchParams();
 
-//   if (filters.genres.length)
-//     params.append("with_genres", filters.genres.join(","));
-
-//   if (filters.rating)
-//     params.append("vote_average.gte", filters.rating);
-
-//   if (filters.yearFrom)
-//     params.append("primary_release_date.gte", `${filters.yearFrom}-01-01`);
-
-//   if (filters.yearTo)
-//     params.append("primary_release_date.lte", `${filters.yearTo}-12-31`);
-
-//   params.append("sort_by", sort);
-
-//   return params.toString();
-// };
 export default function CategoryPage() {
+  const [page ,setPage] = useState<number>(1)
   const [filters, setFilters] = useState<payLoad>({
     genres: [],
     rating: 0,
     yearFrom: "",
     yearTo: "",
+    sortBy:"",
+    page:page
   });
-
+ 
   const [sort, setSort] = useState("popularity");  
-  const debouncedFilters = useDebounceValue(filters, 3000)
+  const debouncedFilters = useDebounceValue<payLoad>(filters, 1000)
   async function getMovies(){
     const res:ExpectedResponse<any>= await axios.post(`/api/movie-filter`,debouncedFilters[0]) 
-    return res.data
+    return res.data.data
   }
 
   
@@ -52,7 +37,9 @@ export default function CategoryPage() {
   genres:string[],
   rating:number,
   yearFrom:string,
-  yearTo:string
+  yearTo:string,
+  sortBy:string,
+  page:number
 }
 const {isLoading, isError , data:movies} =useQuery<
 ExpectedResponse<any> ,AxiosError<ErrorType> ,payLoad
@@ -62,32 +49,9 @@ ExpectedResponse<any> ,AxiosError<ErrorType> ,payLoad
   enabled: !!debouncedFilters
 })
 
-// We have to create a func, to sort movies:- 
-
-const sortMovies=async()=>{
-  if(sort==='popularity')  //Todo:- change it 
-  {
-    // movies should be sort in descending acc. to popularity 
-  }
-  if(sort==='rating'){
-    // movies should be sort in descending acc. to vote_average
-
-  }
-  if(sort==='latest'){
-    // movies should be sort in descending acc. to release date
-
-  }
-  if(sort==='oldest'){
-    // movies should be sort in ascending acc. to rel. date
-
-  }
-  
-
-}
-
 useEffect(()=>{
-sortMovies()
-},[sort])
+setPage(1)
+},[filters])
 
 
 const movie = [
@@ -228,7 +192,7 @@ const movie = [
 
         
         <div>
-         <MoviesGrid movies={movie} />
+         <MoviesGrid movies={movies} />
         </div>
       </div>
     </div>
