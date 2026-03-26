@@ -9,15 +9,20 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner';
 
-const setPassword = () => {
+const setPassword = async(
+  {searchParams}:{
+    searchParams: Promise<{ email?: string; otp?: string }>;
+  }
+) => {
+
     
     const [pass, setPass]= useState('')
     const [confpass, setConfPass]=useState('')
     const [code , setCode] =useState('')
     const [email,setEmail]= useState('')
-    const searchParams = useSearchParams()
-    const Email = searchParams.get('email')
-    const otp = searchParams.get('otp')
+    const params = await searchParams
+    const Email = params.email
+    const otp = params.otp
     useEffect(()=>{
        if(otp) setCode(otp)
        if(Email) setEmail(Email)
