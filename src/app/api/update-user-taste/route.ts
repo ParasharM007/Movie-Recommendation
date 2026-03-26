@@ -32,39 +32,45 @@ export async function POST(req: Request) {
       field: allowedField;
       data: string | string[];
     };
+
+    if (!field || !action || !data) {
+  return apiResponse(false,"Missing fields",400)
+}
     
     if (!allowedFields.includes(field) || !allowedActions.includes(action)) {
       return apiResponse(false, "Invalid details", 400);
     }
 
     const values = Array.isArray(data) ? data : [data]; // we will check whether data is already in array or not
-    console.log("Vaulues:- ",values)
+    console.log("Values:- ",values)
     const updateQuery =
     action === "add"
       ? { $addToSet: { [field]: { $each: values } } }
       : { $pull: { [field]: { $in: values } } };
-    const updatedUser = await UserTasteModel.findOneAndUpdate(
-      {
-        userId: user._id,
-      },
-      updateQuery,
-      {
-        new: true, upsert:true
-      }
-    )
-    if(!updatedUser) return apiResponse(false, "Failed to update user taste",400)
+    // TODO:- we have to check if movie already exists in field?
+    const updatedUser = await UserTasteModel.updateOne(
+  
+      { userId: user._id },
+      { $addToSet: { [field]: { $each: values } } }
+);
+    
+    if(updatedUser.modifiedCount===0)  //1 for updated successfully
+      return apiResponse(true, "Movie already exists", 200);
 
-      const updatedUserDTO = {
-        id:updatedUser._id.toString(),
-        email:updatedUser.email.toString(),
-        updatedField:updatedUser[field],
 
-      }
+    
+    
+
+      console.log("updweowipgjspjg ",updatedUser)
+      // const updatedUserDTO = {          Removed this from res
+      //   id:updatedUser._id.toString(),
+      //   updatedField:updatedUser[field],
+
+      // }
     return apiResponse(
       true,
       `User's ${field} updated successfully`,
-      200,
-      updatedUserDTO
+      200
     );
   } catch (error) {
     console.log("Error ",error)

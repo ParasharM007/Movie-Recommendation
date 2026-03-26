@@ -4,13 +4,13 @@ import { Skeleton } from "components/ui/skeleton";
 
 export function SkeletonCard() {
   return (
-    <Card className="w-full bg-black max-w-xs border-gray-800">
+    <Card className=" bg-black w-[20%] border-gray-700">
       <CardHeader>
-        <Skeleton className="bg-gray-700 h-4 w-2/3" />
-        <Skeleton className="h-4 w-1/2 bg-gray-700" />
+        <Skeleton className="bg-gray-700 h-4 w-12" />
+        <Skeleton className="h-4 w-8 bg-gray-700" />
       </CardHeader>
       <CardContent>
-        <Skeleton className="aspect-video w-full bg-gray-700" />
+        <Skeleton className="aspect-video h-4 w-15 bg-gray-700" />
       </CardContent>
     </Card>
   )

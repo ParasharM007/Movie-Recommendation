@@ -1,11 +1,12 @@
 
+
 import { useRouter } from "next/navigation";
 
-export default function MoviesRow({ movies }: any) {
+export default function MoviesGrid({ movies }: any) {
   const router = useRouter();
   return (
-    <div className="relative group min-w-full">
-      <div className="flex space-x-4 overflow-x-auto px-6 py-4 ">
+    <div className="">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {movies && movies.length !== 0 ? (
           movies.map((movie: any) => (
             <div

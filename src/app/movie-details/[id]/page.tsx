@@ -4,9 +4,12 @@ import  { useEffect, useMemo, useState } from "react";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { Loader2, Play, Star } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { ExpectedResponse } from "@/types/ExpectedResponse";
 import { toast } from "sonner";
+import useUpdateUserTaste from "@/helpers/hooks/useUpdateUserTaste";
+import { Heart, Check, Plus } from "lucide-react";
+import { UserTasteInput } from "@/types/UserTaste";
 
 export default function MovieDetailsPage() {
   const [Id, setId] = useState<string>(""); // default: Avengers Infinity War :-299536
@@ -19,14 +22,20 @@ export default function MovieDetailsPage() {
     if(!id){
       return <h1>Couldn't find movie id</h1>
     }
+
+    const { mutate } =useUpdateUserTaste()
    type ErrorType={
     message:string
   }
   type MovieDetails={
     movies:any,
     videos:{results:undefined},
-    credits:undefined
+    credits:undefined,
+    userTaste:UserTasteInput
   }
+
+ 
+ 
  const mutation = useMutation<
   ExpectedResponse<MovieDetails>,
   AxiosError<ErrorType>,
@@ -86,10 +95,10 @@ export default function MovieDetailsPage() {
 
   const bgImage =
     movie?.backdrop_path
-      ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}`
-      : movie?.poster_path
+      ? (`https://image.tmdb.org/t/p/original${movie.backdrop_path}`)
+      : (movie?.poster_path
       ? `https://image.tmdb.org/t/p/original${movie.poster_path}`
-      : "";
+      : "");
 
   return (
     <div className="min-h-screen text-white bg-black relative">
@@ -150,6 +159,47 @@ export default function MovieDetailsPage() {
                 <span className="font-semibold">{movie?.vote_average || "—"}</span>
                 <span className="text-white/60 text-sm">({movie?.vote_count || 0} votes)</span>
               </div>
+
+              {/* Action Buttons */}
+<div className="mt-5 flex flex-wrap gap-3">
+  
+  {/* Favourite */}
+  <button 
+  onClick={()=>mutate({
+    action:'add',
+    field:'favorites',
+    data:id
+  })}
+  className="flex items-center gap-2 rounded-full cursor-pointer border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm hover:bg-red-500/20 transition">
+    <Heart className="h-4 w-4 text-red-400" />
+    Favourite
+  </button>
+
+  {/* Watched */}
+  <button
+  onClick={()=>mutate({
+    action:'add',
+    field:'alreadyWatched',
+    data:id
+  })}
+  className="flex items-center gap-2 rounded-full cursor-pointer border border-green-500/30 bg-green-500/10 px-4 py-2 text-sm hover:bg-green-500/20 transition">
+    <Check className="h-4 w-4 text-green-400" />
+    Watched
+  </button>
+
+  {/* Watchlist */}
+  <button 
+  onClick={()=>mutate({
+    action:'add',
+    field:'watchlist',
+    data:id
+  })}
+  className="flex items-center gap-2 rounded-full cursor-pointer border border-blue-500/30 bg-blue-500/10 px-4 py-2 text-sm hover:bg-blue-500/20 transition">
+    <Plus className="h-4 w-4 text-blue-400" />
+    Watchlist
+  </button>
+
+</div>
 
               {/* Genres */}
               <div className="mt-5 flex flex-wrap gap-2">

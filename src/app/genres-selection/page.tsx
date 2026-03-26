@@ -62,13 +62,16 @@ export default function GenreSelection() {
       const res:AxiosResponse = await axios.post(`/api/update-user-taste`, data);
       return res.data;
     },
-  });
+    
+  },);
   const handleGenresSubmission = async () => {
     const data = {
       action: "add",
       field: "likedGenres",
       data: selectedGenres,
     };
+    if(selectedGenres.length!==0){
+
     if (token) {
       mutation.mutate(data, {
         onSuccess: (res) => {
@@ -90,6 +93,10 @@ export default function GenreSelection() {
       });
     }else{
       localStorage.setItem('likedGenres',JSON.stringify(selectedGenres))
+    }
+  }
+    else{
+     toast.error("Please select genre first!")
     }
   };
   return (
