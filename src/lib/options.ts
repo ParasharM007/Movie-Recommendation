@@ -118,7 +118,7 @@ callbacks: {
 
 pages:{
   signIn:'/sign-in',
-  error:'/next-error'
+  error:'/auth-error'
 },
 session:{
   strategy:'jwt'
