@@ -1,12 +1,19 @@
 "use client";
-export const dynamic = "force-dynamic";
-
-import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function AuthError() {
-  const params = useSearchParams();
-  const error = params.get("error");
+export default async function AuthError(
+  {
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>
+}
+) {
+  
+ const params = await searchParams;
+
+  const rawError = params?.error;
+  const decodedError = decodeURIComponent(rawError || "");
+  const cleanError = decodedError.replace(/^Error:\s*/, "");
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
@@ -35,7 +42,7 @@ export default function AuthError() {
 
         {/* Error Message */}
         <p className="mt-2 text-sm text-gray-600">
-          {decodeURIComponent(error || "Something went wrong. Please try again.")}
+          {cleanError || "Something went wrong. Please try again."}
         </p>
 
         {/* Actions */}
