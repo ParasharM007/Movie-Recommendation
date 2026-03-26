@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader } from "components/ui/card";
 import { Skeleton } from "components/ui/skeleton";
 
 
-export function SkeletonCard() {
+export default function SkeletonCard() {
   return (
     <Card className=" bg-black w-[20%] border-gray-700">
       <CardHeader>
