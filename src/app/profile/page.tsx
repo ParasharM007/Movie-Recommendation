@@ -10,19 +10,19 @@ const Profile = () => {
       Profile page :-
       <div
         className="text-white ml-20 m-5 p-5 cursor-pointer "
-        onClick={() => router.replace(`UserProfile/get-genres`)}
+        onClick={() => router.replace(`/profile/get-genres`)}
       >
         Favourite genres
       </div>
       <div
         className="text-white ml-20 m-5 p-5 cursor-pointer "
-        onClick={() => router.replace(`/UserProfile/watch-list`)}
+        onClick={() => router.replace(`/profile/watch-list`)}
       >
         Watchlist
       </div>
       <div
         className="text-white ml-20 m-5 p-5 cursor-pointer "
-        onClick={() => router.replace(`/UserProfile/favorites`)}
+        onClick={() => router.replace(`/profile/favorites`)}
       >
         Favorites
       </div>

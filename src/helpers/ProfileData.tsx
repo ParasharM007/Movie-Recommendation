@@ -1,7 +1,7 @@
 "use client";
 
 import MoviesRow from "@/app/MoviesRow/page";
-import SkeletonCard from "@/app/skeletonCard.tsx/page";
+import SkeletonCard from "@/app/skeletonCard/page";
 
 import NotAuthPage from "@/helpers/NotAuthPage";
 import { ExpectedResponse } from "@/types/ExpectedResponse";

@@ -1,4 +1,5 @@
 "use client";
+import { Filter } from "lucide-react";
 import { useState } from "react";
 
 const genresList = [
@@ -10,6 +11,9 @@ const genresList = [
 ];
 
 export default function FilterSidebar({ filters, setFilters }: any) {
+
+  const [open, setOpen] = useState(false);
+
   const toggleGenre = (id: number) => {
     setFilters((prev: any) => {
       const exists = prev.genres.includes(id);
@@ -23,10 +27,36 @@ export default function FilterSidebar({ filters, setFilters }: any) {
   };
 
   return (
-    <div className="w-64 h-auto border bg-gray-900 p-4 rounded-xl space-y-6">
+    <div>
+    {/* {!open && ( */}
+   <button
+    className="fixed top-20 left-4 md:top-62 md:left-1 lg:top-5 lg:left-30 z-50   text-white 
+              h-12 w-12  rounded-full 
+             flex items-center justify-center " 
+    onClick={(e) => {
+      e.stopPropagation();
+      setOpen(prev=>!prev);
+    }}
+  >
+    <Filter size={28} />
+  </button>
+  {/* )} */}
+  
+
+      <div
+        onClick={() => setOpen(false)}
+        className={`fixed inset-0 z-40 bg-black/3
+          ${open ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+          />
+
+    <div className={`
+      lg:bg-black/10 fixed lg:z-30 w-64 h-[95vh] lg:h-[55vh] z-50  bg-gradient-to-r from-black/90 to-black/70
+      transition-all duration-300 ease-in-out p-2 border rounded-xl lg:space-y-0 space-y-6
+      ${open?"opacity-100 -translate-x-1 lg:translate-x-15" : "opacity-0 -translate-x-5"} 
+      `}>
       <h2 className="text-xl font-semibold">Filters</h2>
 
-      {/* Genres */}
+      
       <div>
         <p className="mb-2 text-sm text-gray-400">Genres</p>
         <div className="flex flex-wrap gap-2">
@@ -34,11 +64,11 @@ export default function FilterSidebar({ filters, setFilters }: any) {
             <button
               key={genre.id}
               onClick={() => toggleGenre(genre.id)}
-              className={`px-3 py-1 cursor-pointer rounded-full text-sm border ${
+              className={`px-3 py-1 my-1 cursor-pointer rounded-full text-sm border ${
                 filters.genres.includes(genre.id)
                   ? "bg-purple-600 border-purple-600"
                   : "border-gray-600"
-              }`}
+                }`}
             >
               {genre.name}
             </button>
@@ -46,9 +76,9 @@ export default function FilterSidebar({ filters, setFilters }: any) {
         </div>
       </div>
 
-      {/* Rating */}
+      
       <div>
-        <p className="mb-2 text-sm text-gray-400">Minimum Rating</p>
+        <p className="my-2 text-sm text-gray-400">Minimum Rating</p>
         <input
           type="range"
           min="0"
@@ -60,12 +90,12 @@ export default function FilterSidebar({ filters, setFilters }: any) {
           }
           className="w-full cursor-pointer accent-purple-600"
         />
-        <p className="text-sm mt-1">{filters.rating} ⭐</p>
+        <p className="text-sm my-2">{filters.rating} ⭐</p>
       </div>
 
-      {/* Year */}
+      
       <div>
-        <p className="mb-2 text-sm text-gray-400">Release Year</p>
+        <p className="my-2 text-sm  text-gray-400">Release Year</p>
         <input
           type="number"
           placeholder="From"
@@ -86,7 +116,7 @@ export default function FilterSidebar({ filters, setFilters }: any) {
         />
       </div>
 
-      {/* Reset */}
+      
       <button
         onClick={() =>
           setFilters({
@@ -96,10 +126,11 @@ export default function FilterSidebar({ filters, setFilters }: any) {
             yearTo: "",
           })
         }
-        className="w-full cursor-pointer bg-purple-600 border-purple-600 py-2 rounded-lg"
+        className="w-full cursor-pointer bg-purple-600 border-purple-600 my-2 py-2 rounded-lg"
       >
         Reset Filters
       </button>
     </div>
+</div>
   );
 }

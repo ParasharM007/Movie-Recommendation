@@ -17,7 +17,7 @@ export default function Sidebar() {
   const [device, setDevice] = useState<"desktop" | "tablet" | "mobile">("desktop");
   
 
-  // to detect device 
+  
   useEffect(() => {
     const checkDevice = () => {
       const width = window.innerWidth;
@@ -54,7 +54,7 @@ export default function Sidebar() {
       
       <div
         onClick={() => setOpen(false)}
-        className={`fixed inset-0 z-40 backdrop-blur-sm bg-black/30
+        className={`fixed inset-0 z-40 border backdrop-blur-sm bg-black/30
         transition-opacity duration-300
         ${open ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       />
@@ -64,7 +64,7 @@ export default function Sidebar() {
         className={`fixed left-0 top-0 h-screen z-50 flex flex-col gap-8 p-4
         bg-gradient-to-r from-black/70 to-transparent
         transition-all duration-300 ease-in-out
-        ${open ? "w-52" : "w-16"}
+        ${isDesktop ? (open ? "w-52" : "w-16") : "w-52"}
         ${isMobile && !open ? "-translate-x-full" : "translate-x-0"}`}
         onMouseEnter={isDesktop ? () => setOpen(true) : undefined}
         onMouseLeave={isDesktop ? () => setOpen(false) : undefined}
@@ -80,10 +80,10 @@ export default function Sidebar() {
       >
         <NavItem icon={<Home size={24}  />} path="/" label="Home" show={open} setOpen={setOpen} />
         <NavItem icon={<Search size={24}/>}  path="/search-page" label="Search" show={open} setOpen={setOpen} />
-        <NavItem icon={<Grid size={24} />}  path="/categories" label="Categories" show={open} setOpen={setOpen} />
+        <NavItem icon={<Grid size={24} />}  path="/explore" label="Explore" show={open} setOpen={setOpen} />
         <NavItem
           icon={<User size={24}  />} 
-          path={status === "authenticated" ? `/profile/${userId}` : "/sign-in"} 
+          path={status === "authenticated" ? `/profile` : "/sign-in"} 
           label={status === "authenticated" ? "Profile" : "Sign in"}
           show={open}
           setOpen={setOpen}

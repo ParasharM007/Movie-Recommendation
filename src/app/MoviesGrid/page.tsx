@@ -6,7 +6,7 @@ export default function MoviesGrid({ movies }: any) {
   const router = useRouter();
   return (
     <div className="">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {movies && movies.length !== 0 ? (
           movies.map((movie: any) => (
             <div
