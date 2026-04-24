@@ -22,10 +22,12 @@ ${hasSearch ? `"${searchQuery}"` : "None (personalized homepage discovery mode)"
 TASK:
 ${
   hasSearch
-    ? `- Recommend EXACTLY 5 movies or TV series that best match the search intent.
-       - Search relevance must be prioritized over genre.`
-    : `- For EACH genre in Preferred Genres, recommend EXACTLY 6 movies or TV series.
-       - These recommendations will be shown as separate genre sections on the homepage.`
+    ? `- Recommend EXACTLY 5 movies that best match the search intent.
+       - Search relevance must be prioritized over genre.
+       - Never recommend any title that appears in alreadyWatched.`
+    : `- For EACH genre in Preferred Genres, recommend EXACTLY 6 movies.
+       - These recommendations will be shown as separate genre sections on the homepage.
+       - Never recommend any title that appears in alreadyWatched.`
 }
 `;
 }

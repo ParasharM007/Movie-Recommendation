@@ -1,6 +1,5 @@
 "use client";
 import { Filter } from "lucide-react";
-import { useState } from "react";
 
 const genresList = [
   { id: 28, name: "Action" },
@@ -9,18 +8,30 @@ const genresList = [
   { id: 18, name: "Drama" },
   { id: 878, name: "Sci-Fi" },
 ];
+type payLoad={
+  genres:number[],
+  rating:number,
+  yearFrom:string,
+  yearTo:string,
+  sortBy:string,
+  page:number
+}
+export default function FilterSidebar({ filters, setFilters , open ,setOpen}: {
+  filters:payLoad, 
+  setFilters:React.Dispatch<React.SetStateAction<payLoad>>,
+  open:boolean,
+  setOpen:React.Dispatch<React.SetStateAction<boolean>>
+}) {
+ 
+  
 
-export default function FilterSidebar({ filters, setFilters }: any) {
-
-  const [open, setOpen] = useState(false);
-
-  const toggleGenre = (id: number) => {
+  const toggleGenre = (id: number, name:string) => {  // TODO:- tmdb expects ids not names 
     setFilters((prev: any) => {
       const exists = prev.genres.includes(id);
       return {
         ...prev,
         genres: exists
-          ? prev.genres.filter((g: number) => g !== id)
+          ? prev.genres.filter((i:number) => i !== id)
           : [...prev.genres, id],
       };
     });
@@ -28,9 +39,9 @@ export default function FilterSidebar({ filters, setFilters }: any) {
 
   return (
     <div>
-    {/* {!open && ( */}
+    
    <button
-    className="fixed top-20 left-4 md:top-62 md:left-1 lg:top-5 lg:left-30 z-50   text-white 
+    className="fixed top-20 left-4 md:top-62 md:left-3 lg:top-5 lg:left-30 z-[70] md:z-[80] lg:z-[70]
               h-12 w-12  rounded-full 
              flex items-center justify-center " 
     onClick={(e) => {
@@ -40,20 +51,26 @@ export default function FilterSidebar({ filters, setFilters }: any) {
   >
     <Filter size={28} />
   </button>
-  {/* )} */}
+  
   
 
       <div
-        onClick={() => setOpen(false)}
+       onClick={(e) => {
+  if (e.target === e.currentTarget) {
+    setOpen(false);
+  }
+}}
         className={`fixed inset-0 z-40 bg-black/3
           ${open ? "opacity-100" : "opacity-0 pointer-events-none"}`}
           />
 
     <div className={`
-      lg:bg-black/10 fixed lg:z-30 w-64 h-[95vh] lg:h-[55vh] z-50  bg-gradient-to-r from-black/90 to-black/70
+      lg:bg-black/10 fixed z-[60] w-64 h-[95vh] lg:h-[55vh]  bg-gradient-to-r from-black/90 to-black/70
       transition-all duration-300 ease-in-out p-2 border rounded-xl lg:space-y-0 space-y-6
       ${open?"opacity-100 -translate-x-1 lg:translate-x-15" : "opacity-0 -translate-x-5"} 
-      `}>
+      `}
+      onClick={(e)=> e.stopPropagation()}
+      >
       <h2 className="text-xl font-semibold">Filters</h2>
 
       
@@ -63,7 +80,7 @@ export default function FilterSidebar({ filters, setFilters }: any) {
           {genresList.map((genre) => (
             <button
               key={genre.id}
-              onClick={() => toggleGenre(genre.id)}
+              onClick={() => toggleGenre(genre.id , genre.name)}
               className={`px-3 py-1 my-1 cursor-pointer rounded-full text-sm border ${
                 filters.genres.includes(genre.id)
                   ? "bg-purple-600 border-purple-600"
@@ -124,6 +141,8 @@ export default function FilterSidebar({ filters, setFilters }: any) {
             rating: 0,
             yearFrom: "",
             yearTo: "",
+            sortBy: "",
+         page: 1
           })
         }
         className="w-full cursor-pointer bg-purple-600 border-purple-600 my-2 py-2 rounded-lg"

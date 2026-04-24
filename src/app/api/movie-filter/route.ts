@@ -78,7 +78,6 @@ export async function POST(req: Request) {
           reason: null, // no AI reason on filter page
         }));
 
-        // return movies;
         return apiResponse(true, "Success", 200,movies);
       }
     

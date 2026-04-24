@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ExpectedResponse } from "@/types/ExpectedResponse";
 import MoviesGrid from "../MoviesGrid/page";
-import SkeletonCard from "../skeletonCard/page";
+import SkeletonCard from "../../../components/skeletonCard";
 import { Loader2 } from "lucide-react";
 import { MovieData } from "@/types/MovieData";
 
@@ -16,16 +16,16 @@ import { MovieData } from "@/types/MovieData";
 
 export default function CategoryPage() {
    const [page ,setPage] = useState<number>(1)
+   const [sort, setSort] = useState("popularity");  
   const [filters, setFilters] = useState<payLoad>({
     genres: [],
     rating: 0,
     yearFrom: "",
     yearTo: "",
-    sortBy:"",
+    sortBy:sort,
     page:page
   });
- 
-  const [sort, setSort] = useState("popularity");  
+  const [filterOpen, setFilterOpen] = useState(false);
   const debouncedFilters = useDebounceValue<payLoad>(filters, 1000)
   async function getMovies():Promise<ExpectedResponse<MovieData[]>>{
     const res:AxiosResponse= await axios.post(`/api/movie-filter`,debouncedFilters[0]) 
@@ -158,8 +158,8 @@ export default function CategoryPage() {
  type ErrorType={
   message:string
  }
- type payLoad={
-  genres:string[],
+  type payLoad={
+  genres:number[],
   rating:number,
   yearFrom:string,
   yearTo:string,
@@ -178,13 +178,24 @@ useEffect(()=>{
 setPage(1)
 },[filters])
 
+useEffect(()=>{
+setFilters((prev:any)=>{
+return {
+  ...prev,
+  sortBy:sort
+}
+}
+)
+},[sort])
+
 
 
   return (
-    <div className="flex ml-20 text-white gap-6 p-6">
+    <div className="flex ml-20 text-white gap-6 p-6 overflow-x-hidden">
       <div className="">
 
-      <FilterSidebar filters={filters} setFilters={setFilters}/>
+      <FilterSidebar filters={filters} setFilters={setFilters}  open={filterOpen}
+  setOpen={setFilterOpen}/>
       </div>
       
 
@@ -203,7 +214,7 @@ setPage(1)
             Loading Movies... <Loader2 className="size-8 animate-spin" />
           </h2>
 
-          <div className="flex min-w-max gap-4 overflow-x-auto p-1 m-1">
+          <div className="grid grid-cols-1  gap-4 md:flex md:min-w-max md:overflow-x-auto md:p-1 p-5 md:m-1">
             <SkeletonCard />
             <SkeletonCard />
             <SkeletonCard />
@@ -212,7 +223,7 @@ setPage(1)
             <SkeletonCard />
           </div>
         </section>
-      ) : ( 
+       ) : (  
         <>
            {!isError && movies &&<section className="mx-7">
 
@@ -221,7 +232,7 @@ setPage(1)
             </div>
           </section>}
         </>
-       )}
+        )} 
         </div>
       </div>
     </div>

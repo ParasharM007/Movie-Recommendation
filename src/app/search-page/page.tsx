@@ -36,9 +36,8 @@ const page = () => {
    }
   })
 
-  const aiResponse = async () => {
-    
-     if (!query) {
+  const aiResponse = async (e:any) => {
+    if (!query) {
     toast.error("Please search something first", {
       description: "search bar is empty",
     });
@@ -91,8 +90,9 @@ const page = () => {
                          outline-none border border-neutral-700
                          focus:border-purple-500 transition"
             onChange={(e)=>setQuery(e.target.value)}
+            onKeyDown={(e)=>{ if(e.key==="Enter") aiResponse(e)}}
           />
-           {!mutation.isPending ? (<button className="text-white m-1 p-2 px-5 cursor-pointer border rounded-full border-gray-100" onClick={aiResponse}>Search</button>):(<Loader2  className="animate-spin m-1 mt-3 "/>)}
+           {!mutation.isPending ? (<button className="text-white m-1 p-2 px-5 cursor-pointer border rounded-full border-gray-100" onClick={(e)=>aiResponse(e)}>Search</button>):(<Loader2  className="animate-spin m-1 mt-3 "/>)}
         </div>
         <div
           className="flex items-center justify-between

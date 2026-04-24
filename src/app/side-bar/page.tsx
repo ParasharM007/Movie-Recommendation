@@ -36,7 +36,7 @@ export default function Sidebar() {
   const isMobile = device === "mobile";
 
   return (
-    <>
+    <div className="">
       
       {isMobile && !open && (
    <button
@@ -54,14 +54,14 @@ export default function Sidebar() {
       
       <div
         onClick={() => setOpen(false)}
-        className={`fixed inset-0 z-40 border backdrop-blur-sm bg-black/30
+        className={`fixed inset-0 z-[80] backdrop-blur-sm bg-black/30
         transition-opacity duration-300
         ${open ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       />
 
       
       <div
-        className={`fixed left-0 top-0 h-screen z-50 flex flex-col gap-8 p-4
+        className={`fixed left-0 top-0 h-screen z-[80] flex flex-col gap-8 p-4
         bg-gradient-to-r from-black/70 to-transparent
         transition-all duration-300 ease-in-out
         ${isDesktop ? (open ? "w-52" : "w-16") : "w-52"}
@@ -89,7 +89,7 @@ export default function Sidebar() {
           setOpen={setOpen}
         />
       </div>
-    </>
+    </div>
   );
 }
 
@@ -109,10 +109,10 @@ function NavItem({
   const router= useRouter()
   
   return (
-    <div className="flex items-center gap-4 text-white cursor-pointer" 
+    <div className="flex items-center ml-2 gap-4 text-white cursor-pointer" 
     onClick={(e)=>
      {  e.stopPropagation(); 
-       router.push(path)
+       router.replace(path)
        setOpen(false)
        
        
