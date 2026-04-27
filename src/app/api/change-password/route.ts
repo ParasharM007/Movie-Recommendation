@@ -25,7 +25,7 @@ export async function POST(req:Request) {
            return apiResponse(false,"User not found",404)
         }
         
-        if(!findUser.password && findUser.providers.length){
+        if(!findUser.password && findUser.providers.length){  //that means its OAuth user
 
              const providersList = findUser.providers.join("or")
             return apiResponse(false,`You logged in with ${providersList}, Please set a password first`,400)
@@ -34,7 +34,7 @@ export async function POST(req:Request) {
              return apiResponse(false,"Please set password first",400)
         }
          
-            const isPasswordCorrect = bcrypt.compare(oldPassword, findUser.password)
+            const isPasswordCorrect = await bcrypt.compare(oldPassword, findUser.password)
          if(!isPasswordCorrect){
              return apiResponse(false,"Incorrect password",401)
          }

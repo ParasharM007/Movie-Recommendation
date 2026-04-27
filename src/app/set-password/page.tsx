@@ -9,7 +9,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner';
 
-const setPassword = async(
+const setPassword = async( //TODO:- this can't be async , this is wrong 
   {searchParams}:{
     searchParams: Promise<{ email?: string; otp?: string }>;
   }
