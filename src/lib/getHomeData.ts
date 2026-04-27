@@ -9,12 +9,12 @@ export async function getHomeData() {
     { name: "Sci-Fi", id: 878 },
     { name: "Thriller", id: 53 },
   ];
-
+ let TMDB_BASE_URL = process.env.TMDB_BASE_URL
   try {
     const results:MovieData[][] = await Promise.all(
       genres.map(async (genre) => {
         const { data } = await axios.get(
-          "https://api.themoviedb.org/3/discover/movie",
+          `${TMDB_BASE_URL}/discover/movie`,
           {
             params: {
               api_key: process.env.TMDB_API_KEY,
@@ -22,6 +22,7 @@ export async function getHomeData() {
               sort_by: "popularity.desc",
               vote_count_gte: 100,
               page: 1,
+              include_adult: false,
             },
           },
         );

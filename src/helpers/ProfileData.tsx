@@ -54,7 +54,7 @@ export default function ProfileData({ field , message}:Props) {
       );
     }
   return (
-    <div className="min-w-max">
+    <div className="">
       {isError && (
         <div>
           <div className="min-h-screen flex flex-col justify-center items-center">
@@ -76,23 +76,27 @@ export default function ProfileData({ field , message}:Props) {
             Loading Movies... <Loader2 className="size-8 animate-spin" />
           </h2>
 
-          <div className="flex min-w-max gap-4 overflow-x-auto p-1 m-1">
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
-          </div>
+          <div className="grid 
+  grid-cols-2 
+  sm:grid-cols-3 
+  md:grid-cols-4 
+  lg:grid-cols-5 
+  xl:grid-cols-6 
+  gap-4">
+  
+  {[...Array(12)].map((_, i) => (
+    <SkeletonCard key={i} />
+  ))}
+</div>
         </section>
       ) : ( 
         <>
-           {!isError && movies &&<section className="mx-7">
+           {!isError && movies &&
+              <div className="ml-10">
 
-            <div className="flex gap-4 overflow-x-auto">
               <MoviesRow movies={movies} />
-            </div>
-          </section>}
+              </div>
+           }
         </>
        )}
     </div>

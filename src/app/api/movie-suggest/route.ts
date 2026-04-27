@@ -11,8 +11,9 @@ import { getHomeData } from "@/lib/getHomeData";
 import { MovieData } from "@/types/MovieData";
 import { UserTasteInput } from "@/types/UserTaste";
 export async function GET(req: Request) {
-  let TMDB_BASE_URL = "https://api.themoviedb.org/3";
+  
   let TMDB_API_KEY = process.env.TMDB_API_KEY;
+  let TMDB_BASE_URL = process.env.TMDB_BASE_URL
   await dbConnect();
   try {
    
@@ -367,10 +368,11 @@ export async function GET(req: Request) {
 
       if (titles) {
         async function searchTMDB(title: string, type: "movie" | "tv") {
-          const endpoint = type === "movie" ? "search/movie" : "search/tv";
+          // const endpoint = type === "movie" ? "search/movie" : "search/tv";
 
           const res = await axios.get(
-            `${TMDB_BASE_URL}/${endpoint}?query=${encodeURIComponent(title)}&api_key=${TMDB_API_KEY}`,
+            // `${TMDB_BASE_URL}/${endpoint}?query=${encodeURIComponent(title)}&api_key=${TMDB_API_KEY}&include_adult=false`,
+            `${TMDB_BASE_URL}/movie?query=${encodeURIComponent(title)}&api_key=${TMDB_API_KEY}&include_adult=false`,
           );
 
           if (!res.data) return null;

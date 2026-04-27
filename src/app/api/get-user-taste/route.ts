@@ -9,7 +9,7 @@ import axios from "axios";
 import { getServerSession, User } from "next-auth";
 
 export async function GET(req: Request) {
-  let TMDB_BASE_URL = "https://api.themoviedb.org/3";
+  let TMDB_BASE_URL = process.env.TMDB_BASE_URL;
   let TMDB_API_KEY = process.env.TMDB_API_KEY;
   const allowedFields = [
     "likedGenres",
@@ -79,7 +79,7 @@ export async function GET(req: Request) {
     async function searchMovieByIdWithTMDB(id: string) {
       const movieId = Number(id);
       const res = await axios.get(
-        `${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US`,
+        `${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US&include_adult=false`,
         {},
       );
 

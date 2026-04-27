@@ -11,13 +11,12 @@ import { MovieData } from "@/types/MovieData";
 import { Loader2 } from "lucide-react";
 import SkeletonCard from "components/skeletonCard";
 
-
 export default function Home() {
   const { data: session } = useSession();
 
   const recommedationsFromLikedGenres = async () => {
     const res: AxiosResponse<ExpectedResponse<MovieData[]>> =
-    await axios.get(`/api/movie-suggest`);
+      await axios.get(`/api/movie-suggest`);
 
     return res.data.data;
     // return [
@@ -368,7 +367,6 @@ export default function Home() {
     console.log("This is the genre vise movies: ", moviesByGenre);
   return (
     <main className="bg-black text-white  min-h-screen">
-    
       <HeroBanner />
 
       {isError && !isLoading && (
@@ -414,13 +412,18 @@ export default function Home() {
             Loading Movies... <Loader2 className=" animate-spin" />
           </h2>
 
-          <div className="flex gap-4 overflow-x-auto m-10">
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
+          <div
+            className="grid 
+             grid-cols-2 
+             sm:grid-cols-3 
+             md:grid-cols-4 
+             lg:grid-cols-5 
+             xl:grid-cols-6 
+             gap-4"
+          >
+            {[...Array(12)].map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
           </div>
         </section>
       ) : (

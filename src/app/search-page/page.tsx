@@ -2,6 +2,7 @@
 import { ExpectedResponse } from "@/types/ExpectedResponse";
 import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosResponse } from "axios";
+import SkeletonCard from "components/skeletonCard";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -105,8 +106,8 @@ const page = () => {
         </div>
       </div>
 
+        
       <section className=" flex flex-col items-center px-6 md:px-12 mt-10">
-       
         {recommendations.length!==0 && <h2 className="text-2xl font-semibold mb-6">Search Results</h2>}
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">

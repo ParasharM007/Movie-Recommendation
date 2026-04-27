@@ -1,17 +1,28 @@
-import { Card, CardContent, CardHeader } from "components/ui/card";
+import { Card, CardContent } from "components/ui/card";
 import { Skeleton } from "components/ui/skeleton";
-
 
 export default function SkeletonCard() {
   return (
-    <Card className=" bg-black w-[20%] flex flex-col items-center border-gray-700">
-      <CardContent>
-        <Skeleton className=" aspect-video bg-gray-700 h-4 w-12 md:w-30 my-1 " />
-        <Skeleton className="aspect-video h-4 w-8 md:w-20 bg-gray-700" />
-      </CardContent>
-      <CardContent>
-        <Skeleton className="aspect-video h-4 w-15 md:w-35 bg-gray-700" />
+    <Card className="bg-[#0f0f0f] border border-gray-800 rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 w-full">
+      
+      
+      <div className="relative w-full aspect-[2/3]">
+        <Skeleton className="h-full w-full bg-gray-800" />
+      </div>
+
+      
+      <CardContent className="p-3 space-y-2">
+        
+        
+        <Skeleton className="h-4 w-3/4 bg-gray-700 rounded-md" />
+        
+        
+        <Skeleton className="h-3 w-1/2 bg-gray-800 rounded-md" />
+        
+        
+        <Skeleton className="h-3 w-1/3 bg-gray-800 rounded-md" />
+      
       </CardContent>
     </Card>
-  )
+  );
 }

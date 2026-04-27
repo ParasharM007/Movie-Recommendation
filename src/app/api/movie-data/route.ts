@@ -11,21 +11,21 @@ export async function GET(req: Request) {
     if (!id) {
       return apiResponse(false,"MovieId is missing",400)
     }
-
+    
     const apiKey = process.env.TMDB_API_KEY;
-  
+    let TMDB_BASE_URL = process.env.TMDB_BASE_URL
          
 
     const [movieRes, videosRes, creditsRes] = await Promise.all([
       axios.get(
-        `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=en-US`,
+        `${TMDB_BASE_URL}/movie/${id}?api_key=${apiKey}&language=en-US&include_adult=false`,
       ),
       axios.get(
-        `https://api.themoviedb.org/3/movie/${id}/videos?api_key=${apiKey}&language=en-US`,
+        `${TMDB_BASE_URL}/movie/${id}/videos?api_key=${apiKey}&language=en-US&include_adult=false`,
         
       ),
       axios.get(
-        `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${apiKey}&language=en-US`,
+        `${TMDB_BASE_URL}/movie/${id}/credits?api_key=${apiKey}&language=en-US&include_adult=false`,
         
       ),
     ]);

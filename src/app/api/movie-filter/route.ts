@@ -6,6 +6,7 @@ import axios from "axios";
 
 export async function POST(req: Request) {
   await dbConnect();
+  let TMDB_BASE_URL = process.env.TMDB_BASE_URL
   try {
     const body = await req.json();
     const { genres, rating, yearFrom, yearTo, sortBy, page } = body as {
@@ -47,10 +48,10 @@ export async function POST(req: Request) {
   
  
         const { data } = await axios.get(
-         `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.TMDB_API_KEY}&${query}`,
+         `${TMDB_BASE_URL}/discover/movie?api_key=${process.env.TMDB_API_KEY}&include_adult=false&${query}`,
           // {
             // params: {
-            //  query              //this will send query as ?query= .... in url but we want to send query directly right after ?...
+            //  query              //this will send query as ?query= .... in url and we can still send query directly right after ?...
             // },
           // },
         );
