@@ -24,7 +24,6 @@ export async function getHomeData() {
               page: 1,
               include_adult: false,
               language:"en-US",
-              region:"IN"
             },
           },
           

@@ -50,6 +50,7 @@ export default function MoviesRow({ movies }: any) {
           <div
             key={movie.id}
             className="group relative bg-[#0f0f0f] rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
+             onClick={() => router.push(`/movie-details/${movie.id}`)}
           >
             {/* Poster */}
             <div className="relative aspect-[2/3] overflow-hidden">

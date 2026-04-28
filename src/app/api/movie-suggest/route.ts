@@ -51,10 +51,11 @@ export async function GET(req: Request) {
         console.log("UserTaste:- ", userTaste);
             const titles = await generateRecommendations(userTaste);
             console.log("Ai data currently for home page:- ",titles)
+            
 
           //If recommendations are not available , we will just send response to show hardcoded genres by TMDB:-
           if (!titles || titles.aiEmpty) {
-            console.log("Searching with TMDB directly ")
+            console.log("Searching with TMDB directly, cause ai titles are not available ")
              //Case :- ai fails during home page:-
               //We will directly use TMDB api using hardcoded genres :-
               const result:MovieData[] =await getHomeData()
@@ -367,14 +368,14 @@ export async function GET(req: Request) {
       //   ],
       // };
 
-      if (titles) {
+      if (titles.recommendations) {
+        console.log("Searching after ai suggestions")
         async function searchTMDB(title: string, type: "movie" | "tv") {
           // const endpoint = type === "movie" ? "search/movie" : "search/tv";
 
        try {
            const res = await axios.get(
              // `${TMDB_BASE_URL}/${endpoint}?query=${encodeURIComponent(title)}&api_key=${TMDB_API_KEY}&include_adult=false`,
-             // `${TMDB_BASE_URL}/movie?query=${encodeURIComponent(title)}&api_key=${TMDB_API_KEY}&include_adult=false`,
               
        `${TMDB_BASE_URL}/search/movie`,
        {
@@ -384,7 +385,7 @@ export async function GET(req: Request) {
            include_adult: false,
            language: "en-US",
          },
-         timeout: 5000,
+         timeout: 10000,
        }
      );
            
@@ -409,7 +410,7 @@ export async function GET(req: Request) {
                   item.type as "movie" | "tv",
                 );
                 if (!tmdbData) return null;
-
+                
                 return {
                   id: tmdbData.id,
                   title: tmdbData.title || tmdbData.name,
@@ -432,7 +433,7 @@ export async function GET(req: Request) {
           if (tmdbResults.length === 0) {
             return apiResponse(
               false,
-              "No movies found from TMDB after ai suggestions",
+              `No movies found from TMDB after ai suggestions`,
               404,
             );
           }

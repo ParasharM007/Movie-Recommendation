@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosResponse } from "axios";
 import { useSession } from "next-auth/react";
 import { ExpectedResponse } from "../types/ExpectedResponse";
-import HeroBanner from "./HeroBanner/page";
+import HeroBanner from "./HeroBanner";
 import MoviesRow from "./MoviesRow/page";
 
 import { useMemo } from "react";
