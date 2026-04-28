@@ -371,15 +371,30 @@ export async function GET(req: Request) {
         async function searchTMDB(title: string, type: "movie" | "tv") {
           // const endpoint = type === "movie" ? "search/movie" : "search/tv";
 
-          const res = await axios.get(
-            // `${TMDB_BASE_URL}/${endpoint}?query=${encodeURIComponent(title)}&api_key=${TMDB_API_KEY}&include_adult=false`,
-            `${TMDB_BASE_URL}/movie?query=${encodeURIComponent(title)}&api_key=${TMDB_API_KEY}&include_adult=false`,
-      
-          //  `${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-IN&region=IN&page=1`
-          );
-
-          if (!res.data) return null;
-          return res.data.results?.[0] || null; // take best match
+       try {
+           const res = await axios.get(
+             // `${TMDB_BASE_URL}/${endpoint}?query=${encodeURIComponent(title)}&api_key=${TMDB_API_KEY}&include_adult=false`,
+             // `${TMDB_BASE_URL}/movie?query=${encodeURIComponent(title)}&api_key=${TMDB_API_KEY}&include_adult=false`,
+              
+       `${TMDB_BASE_URL}/search/movie`,
+       {
+         params: {
+           api_key: TMDB_API_KEY,
+           query: title,
+           include_adult: false,
+           language: "en-US",
+         },
+         timeout: 5000,
+       }
+     );
+           
+ 
+           if (!res.data) return null;
+           return res.data.results?.[0] || null; // take best match
+       } catch (error:any) {
+        console.log("TMDB error:", error.message);
+    return null;
+       }
         }
 
         let tmdbResults: MovieData[];
@@ -388,6 +403,7 @@ export async function GET(req: Request) {
           const rawResults: (MovieData | null)[] = await Promise.all(
             titles.recommendations.flatMap((rec: any) =>
               rec.items.map(async (item: any) => {
+               try {
                 const tmdbData: any = await searchTMDB(
                   `${item.title}`,
                   item.type as "movie" | "tv",
@@ -403,6 +419,10 @@ export async function GET(req: Request) {
                   overview: tmdbData.overview,
                   reason: item.reason, // AI personalization
                 };
+                
+      } catch {
+        return null; 
+      }
               }),
             ),
           );
@@ -428,7 +448,7 @@ export async function GET(req: Request) {
     }
     } catch (error) {
       console.error("An unexpected error occured!" + error);
-      throw error;
+      return apiResponse(false, "Internal server error", 500);
     }
     }
 
