@@ -335,8 +335,9 @@ export default function Home() {
   } = useQuery({
     queryKey: ["movie-recommendations", session],
     queryFn: recommedationsFromLikedGenres,
-    staleTime: 1000,
+    staleTime: 1000 * 60,
     refetchOnWindowFocus: false,
+    retry: false,
   });
 
   const groupByGenre = (movies: MovieData[]) => {

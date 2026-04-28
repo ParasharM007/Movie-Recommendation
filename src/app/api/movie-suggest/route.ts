@@ -1,3 +1,4 @@
+// export const runtime = "nodejs";
 import { generateRecommendations } from "@/lib/groq";
 import { getServerSession, User } from "next-auth";
 import { authOptions } from "../../../lib/options";
@@ -373,6 +374,8 @@ export async function GET(req: Request) {
           const res = await axios.get(
             // `${TMDB_BASE_URL}/${endpoint}?query=${encodeURIComponent(title)}&api_key=${TMDB_API_KEY}&include_adult=false`,
             `${TMDB_BASE_URL}/movie?query=${encodeURIComponent(title)}&api_key=${TMDB_API_KEY}&include_adult=false`,
+      
+          //  `${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=en-IN&region=IN&page=1`
           );
 
           if (!res.data) return null;

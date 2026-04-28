@@ -17,7 +17,7 @@ const UserTasteSchema = new Schema(
     },
 
     favorites: {
-      type: [String], // tmdb movie/tv ids ,titles
+      type: [String], // tmdb movie/tv ids 
       default: []
     },
 

@@ -23,8 +23,11 @@ export async function getHomeData() {
               vote_count_gte: 100,
               page: 1,
               include_adult: false,
+              language:"en-US",
+              region:"IN"
             },
           },
+          
         );
 
         if (data) console.log("Get Home Page data ", data);
