@@ -14,7 +14,6 @@ type payLoad={
   yearFrom:string,
   yearTo:string,
   sortBy:string,
-  page:number
 }
 export default function FilterSidebar({ filters, setFilters , open ,setOpen}: {
   filters:payLoad, 
@@ -25,7 +24,7 @@ export default function FilterSidebar({ filters, setFilters , open ,setOpen}: {
  
   
 
-  const toggleGenre = (id: number, name:string) => {  // TODO:- tmdb expects ids not names 
+  const toggleGenre = (id: number, name:string) => {  // TODO:- tmdb expects ids 
     setFilters((prev: any) => {
       const exists = prev.genres.includes(id);
       return {
@@ -41,9 +40,9 @@ export default function FilterSidebar({ filters, setFilters , open ,setOpen}: {
     <div>
     
    <button
-    className="fixed top-20 left-4 md:top-62 md:left-3 lg:top-5 lg:left-30 z-[70] md:z-[80] lg:z-[70]
+    className="fixed top-20 left-4 md:top-62 md:left-5 lg:top-5 lg:left-35 z-[70] md:z-[80] lg:z-[70]
               h-12 w-12  rounded-full 
-             flex items-center justify-center " 
+             flex items-center justify-center cursor-pointer " 
     onClick={(e) => {
       e.stopPropagation();
       setOpen(prev=>!prev);
@@ -61,13 +60,18 @@ export default function FilterSidebar({ filters, setFilters , open ,setOpen}: {
   }
 }}
         className={`fixed inset-0 z-40 bg-black/3
-          ${open ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+  ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
           />
 
     <div className={`
-      lg:bg-black/10 fixed z-[60] w-64 h-[95vh] lg:h-[55vh]  bg-gradient-to-r from-black/90 to-black/70
-      transition-all duration-300 ease-in-out p-2 border rounded-xl lg:space-y-0 space-y-6
-      ${open?"opacity-100 -translate-x-1 lg:translate-x-15" : "opacity-0 -translate-x-5"} 
+     lg:bg-black/10 fixed z-[60] w-64 h-[95vh] md:h-[53vh]
+    bg-gradient-to-r from-black/90 to-black/70
+    transition-all duration-300 ease-in-out p-2 border rounded-xl
+    lg:space-y-0 space-y-6
+     ${open 
+  ? "opacity-100 md:translate-x-0 lg:translate-x-15 pointer-events-auto" 
+  : "opacity-0 -translate-x-full pointer-events-none"
+}
       `}
       onClick={(e)=> e.stopPropagation()}
       >
@@ -133,7 +137,8 @@ export default function FilterSidebar({ filters, setFilters , open ,setOpen}: {
         />
       </div>
 
-      
+      <div className="flex gap-1 mt-4">
+
       <button
         onClick={() =>
           setFilters({
@@ -141,15 +146,19 @@ export default function FilterSidebar({ filters, setFilters , open ,setOpen}: {
             rating: 0,
             yearFrom: "",
             yearTo: "",
-            sortBy: "",
-         page: 1
+            sortBy: "", //TODO page is missing in side bar
           })
         }
-        className="w-full cursor-pointer bg-purple-600 border-purple-600 my-2 py-2 rounded-lg"
+        className="w-1/2 cursor-pointer bg-purple-600 border-purple-600 p-1 rounded-xl"
       >
         Reset Filters
       </button>
+      <button 
+      className="w-1/2 cursor-pointer bg-red-700 border-purple-600  rounded-xl"
+      onClick={()=>setOpen(prev=>!prev)}
+      >Close</button>
     </div>
+      </div>
 </div>
   );
 }

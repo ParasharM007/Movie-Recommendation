@@ -1,10 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDebounceValue } from "usehooks-ts";
 
 import { SortDropdown } from "./SortDropdown";
 import FilterSidebar from "./FilterSideBar";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, QueryFunctionContext } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ExpectedResponse } from "@/types/ExpectedResponse";
 import MoviesGrid from "./MoviesGrid";
@@ -12,8 +12,8 @@ import SkeletonCard from "../../../components/skeletonCard";
 import { Loader2 } from "lucide-react";
 import { MovieData } from "@/types/MovieData";
 
-export default function CategoryPage() {
-  const [page, setPage] = useState<number>(1);
+
+export default function ExplorePage() {
   const [sort, setSort] = useState("popularity");
   const [filters, setFilters] = useState<payLoad>({
     genres: [],
@@ -21,14 +21,18 @@ export default function CategoryPage() {
     yearFrom: "",
     yearTo: "",
     sortBy: sort,
-    page: page,
   });
   const [filterOpen, setFilterOpen] = useState(false);
   const debouncedFilters = useDebounceValue<payLoad>(filters, 1000);
-  async function getMovies(): Promise<ExpectedResponse<MovieData[]>> {
+  async function getMovies({ pageParam = 1 }:QueryFunctionContext)
+  // : Promise<ExpectedResponse<MovieData[]>> 
+  {
     const res: AxiosResponse = await axios.post(
       `/api/movie-filter`,
-      debouncedFilters[0],
+      {
+    ...debouncedFilters[0],
+    page: pageParam,
+  }
     );
     return res.data.data;
     //     return [
@@ -155,6 +159,55 @@ export default function CategoryPage() {
     // ]
   }
 
+
+// Response:- {   data
+// : 
+// {results: [{id: 1318447, title: "Apex", genre: null,…},…], page: 1, total_pages: 3208,…}
+// page
+// : 
+// 1
+// results
+// : 
+// [{id: 1318447, title: "Apex", genre: null,…},…]
+// 0
+// : 
+// {id: 1318447, title: "Apex", genre: null,…}
+// 1
+// : 
+// {id: 1226863, title: "The Super Mario Galaxy Movie", genre: null,…}
+// 2
+// : 
+// {id: 1523145, title: "Your Heart Will Be Broken", genre: null,…}
+// 3
+// : 
+// {id: 1198994, title: "Send Help", genre: null,…}
+// 4
+// : 
+// {id: 936075, title: "Michael", genre: null,…}
+// 5
+// : 
+// {id: 1641319, title: "Sniper: No Nation", genre: null,…}
+// total_pages
+// : 
+// 3208
+// total_results
+// : 
+// 64155
+// message
+// : 
+// "Success"
+// success
+// : 
+// true }
+
+
+type MoviesResponse = {
+  results: MovieData[];
+  page: number;
+  total_pages: number;
+  total_results: number;
+};
+
   type ErrorType = {
     message: string;
   };
@@ -164,26 +217,36 @@ export default function CategoryPage() {
     yearFrom: string;
     yearTo: string;
     sortBy: string;
-    page: number;
   };
-  const {
-    isLoading,
-    isError,
-    data: movies,
-  } = useQuery<
-    Promise<ExpectedResponse<MovieData[]>>,
-    AxiosError<ErrorType>,
-    payLoad
-  >({
-    queryKey: ["explore", debouncedFilters],
-    queryFn: getMovies,
-    enabled: !!debouncedFilters,
-  });
+ const {
+  data,
+  isLoading,
+  isError,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+} = useInfiniteQuery<ExpectedResponse<MoviesResponse>, ErrorType >({
+  queryKey: ["explore", debouncedFilters[0]],
+  queryFn:getMovies,
+  initialPageParam: 1,
 
-  useEffect(() => {
-    setPage(1);
-  }, [filters]);
+  getNextPageParam: (lastPage:any, allPages:any) => {
+   
+   
+    //lastPage :- The latest API response
+    //allPages:- Array of ALL fetched pages so far
 
+    
+    return lastPage.page < lastPage.total_pages
+    ? lastPage.page + 1
+    : undefined;
+  },
+
+  enabled: !!debouncedFilters,
+});
+
+
+ 
   useEffect(() => {
     setFilters((prev: any) => {
       return {
@@ -192,6 +255,43 @@ export default function CategoryPage() {
       };
     });
   }, [sort]);
+
+
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+useEffect(() => {
+  const observer = new IntersectionObserver((entries) => {
+    if (
+      entries[0].isIntersecting &&
+      hasNextPage &&
+      !isFetchingNextPage &&
+       data  
+    ) {
+      fetchNextPage();
+    }
+    
+  },
+ {
+    rootMargin: "200px", // 👈 trigger BEFORE reaching bottom
+    threshold: 0,
+  });
+  
+  if (loadMoreRef.current) {
+    observer.observe(loadMoreRef.current);
+  }
+  
+  return () => observer.disconnect();
+}, [hasNextPage, isFetchingNextPage]);
+
+// This is how useInfiniteQuery accumulate pages data so we have to use flatMap:- data = {
+//   pages: [
+//     { page: 1, results: [movie1, movie2, ...] },
+//     { page: 2, results: [movie21, movie22, ...] },
+//     { page: 3, results: [movie41, movie42, ...] }
+//   ]
+// }
+const allMovies =
+  data?.pages.flatMap((page:any) => page.results) || [];
 
   return (
     <div className="flex ml-20 text-white gap-6 p-6 overflow-x-hidden">
@@ -232,13 +332,20 @@ export default function CategoryPage() {
             </section>
           ) : (
             <>
-              {!isError && movies && (
+
+              {!isError && allMovies && (
                 <section className="mx-7">
                   <div className="flex gap-4 overflow-x-auto">
-                    <MoviesGrid movies={movies} />
+                    <MoviesGrid movies={allMovies} />
                   </div>
                 </section>
               )}
+<div ref={loadMoreRef} className="h-10" />
+              {isFetchingNextPage && (
+    <div className="text-center mt-4">
+      <Loader2 className="animate-spin mx-auto" />
+    </div>
+  )}
             </>
           )}
         </div>

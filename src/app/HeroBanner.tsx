@@ -2,9 +2,17 @@ import Image from "next/image";
 import { Play, Info, TrendingDown } from "lucide-react";
 import { TrendingRow } from "./TrendingRow";
 import { useRouter } from "next/navigation";
+import { useRef } from "react";
 
 export default function HeroBanner() {
   const router= useRouter()
+  const targetRef = useRef<HTMLDivElement | null>(null)
+  const handleScroll=()=>{
+    targetRef.current?.scrollIntoView({
+      block:'start',
+      behavior:'smooth'
+    })
+  }
   return (
     <>
     <section className="relative h-[95vh] w-full overflow-hidden flex items-center">
@@ -25,10 +33,6 @@ export default function HeroBanner() {
       
       <div className="relative z-20 px-6 md:px-16 max-w-2xl">
         
-        
-        <span className="text-sm bg-red-600 px-3 py-1 rounded-full font-semibold">
-          🎬 Trending Now
-        </span>
 
         
         <h1 className="text-4xl md:text-6xl font-extrabold text-white mt-4 leading-tight">
@@ -43,7 +47,8 @@ export default function HeroBanner() {
         
         <div className="flex gap-4 mt-6">
           <button className="flex items-center gap-2 cursor-pointer bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition"
-          onClick={() => router.push(`/explore`)}
+          // onClick={() => router.push(`/explore`)}
+          onClick={handleScroll}
           >
             <Play size={20} /> Explore
           </button>
@@ -57,7 +62,10 @@ export default function HeroBanner() {
       
       <div className="absolute bottom-0 w-full h-40 bg-gradient-to-t from-black to-transparent z-20" />
     </section>
+    <div className="" ref={targetRef}>
     <TrendingRow />
+
+    </div>
     </>
   );
 }

@@ -20,7 +20,7 @@ export async function getHomeData() {
               api_key: process.env.TMDB_API_KEY,
               with_genres: genre.id,
               sort_by: "popularity.desc",
-              vote_count_gte: 100,
+              vote_count_gte: 20,
               page: 1,
               include_adult: false,
               language:"en-US",

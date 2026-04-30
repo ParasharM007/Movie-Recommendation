@@ -35,7 +35,7 @@ export async function POST(req: Request) {
 
       if (sortBy) params.append("sort_by", sortBy);
       
-      params.append("vote_count.gte", "50");   // to get movie with minimum vote count of 50
+      params.append("vote_count.gte", "20");   // to get movie with minimum vote count of 20
       params.append("page", page.toString())
 
       return params.toString();
@@ -79,7 +79,14 @@ export async function POST(req: Request) {
           reason: null, // no AI reason on filter page
         }));
 
-        return apiResponse(true, "Success", 200,movies);
+        // return apiResponse(true, "Success", 200,movies);
+        return apiResponse(true, "Success", 200, {
+  results: movies,
+  page: data.page,
+  total_pages: data.total_pages,
+  // total_pages: 2,
+  total_results: data.total_results,
+});
       }
     
       catch (error) {

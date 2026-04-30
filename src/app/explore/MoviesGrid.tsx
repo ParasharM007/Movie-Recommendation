@@ -1,6 +1,7 @@
 
 // For Explore page:- 
 'use client'
+import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function MoviesGrid({ movies }: any) {
@@ -9,10 +10,11 @@ export default function MoviesGrid({ movies }: any) {
     <div className="">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {movies && movies.length !== 0 ? (
-          movies.map((movie: any) => (
+          movies.map((movie: any) => (<>
+          
             <div
               key={movie.id}
-              className="min-w-[160px] hover:scale-105 cursor-pointer transition-transform"
+              className="relative min-w-[160px] hover:scale-105 cursor-pointer transition-transform"
               onClick={() => router.push(`/movie-details/${movie.id}`)}
             >
               <img
@@ -21,7 +23,12 @@ export default function MoviesGrid({ movies }: any) {
                 className="w-full rounded-md"
               />
               <p className="text-sm mt-2 truncate">{movie.title}</p>
+              <div className="absolute top-3 bg-black/70 px-2 py-1 rounded-lg flex items-center gap-1 text-xs text-yellow-400">
+                <Star className="size-3 fill-yellow-400" />
+                {movie.rating.toFixed(1)}
+              </div>
             </div>
+              </>
           ))
         ) : (
           <div className="flex bg-gray-600/90 p-4 rounded-3xl justify-center items-center min-w-full">

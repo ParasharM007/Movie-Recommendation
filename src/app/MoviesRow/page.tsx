@@ -52,7 +52,7 @@ export default function MoviesRow({ movies }: any) {
             className="group relative bg-[#0f0f0f] rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
              onClick={() => router.push(`/movie-details/${movie.id}`)}
           >
-            {/* Poster */}
+            
             <div className="relative aspect-[2/3] overflow-hidden">
               <img
                 src={`https://image.tmdb.org/t/p/w500${movie.poster}`}
@@ -60,14 +60,14 @@ export default function MoviesRow({ movies }: any) {
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
 
-              {/* Rating badge */}
+              
               <div className="absolute top-2 right-2 bg-black/70 px-2 py-1 rounded-lg flex items-center gap-1 text-xs text-yellow-400">
                 <Star className="size-3 fill-yellow-400" />
-                {movie.vote_average?.toFixed(1)}
+                {movie.rating?.toFixed(1)}
               </div>
             </div>
 
-            {/* Content */}
+            
             <div className="p-3 space-y-1">
               <h3 className="text-sm font-semibold text-white line-clamp-1">
                 {movie.title}
