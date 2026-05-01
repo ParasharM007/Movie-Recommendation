@@ -11,7 +11,6 @@ export function buildUserPrompt(
   return `
 User Profile:
 - Preferred Genres: ${user.likedGenres.length ? user.likedGenres.join(", ") : "None"}
-- Recently Liked: ${user.recentlyLiked.length ? user.recentlyLiked.join(", ") : "None"}
 - Favorites: ${user.favorites.length ? user.favorites.join(", ") : "None"}
 - Already Watched: ${user.alreadyWatched.length ? user.alreadyWatched.join(", ") : "None"}
 - WatchList: ${user.watchlist.length ? user.watchlist.join(", ") : "None"}

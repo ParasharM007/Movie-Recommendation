@@ -9,7 +9,6 @@
 //     alreadyWatched:string[],
 //     favorites:string[],
 //     watchlist:string[],    
-//     recentlyLiked:string[] 
 export interface ExpectedResponse<T> {
     success:boolean,
     message:string,

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosResponse } from "axios";
-import { ChevronRight, Heading1 } from "lucide-react";
+import { ChevronRight, Heading1, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export function TrendingRow() {
@@ -11,6 +11,7 @@ export function TrendingRow() {
     if(!res) return null
     console.log("Trendign movies",res.data.data)
     return res.data.data
+    
     // return  [
     //     {
     //         "adult": false,
@@ -469,17 +470,20 @@ export function TrendingRow() {
         🔥 Trending Movies -
       </h2> */}
          <h1 className="text-lg bg-red-700 px-3 py-1 rounded-full font-semibold">
-          🎬 Trending Now
+          🎬 Trending Now 
         </h1>
+        <span className="font-extrabold mt-1">----</span>
 <ChevronRight className="w-6 h-6 mt-1.5" />
+ 
+            {isLoading && <Loader2 className=" animate-spin m-1" />}
+ 
       </div>
 
-    <div> {movies?.length ===0 && <h1>No trending movies are available</h1>}</div>
 
       <div className="relative">
   <div className="flex gap-4 overflow-x-auto scrollbar-hide overflow-y-hidden px-2 py-4 scroll-smooth scrollbar-hide">
 
-    {movies?.length !== 0 && movies?.map((movie: any) => (
+    { movies && movies?.length !== 0 ?( movies?.map((movie: any) => (
       <div
         key={movie.id}
         onClick={() => router.push(`/movie-details/${movie.id}`)}
@@ -494,7 +498,15 @@ export function TrendingRow() {
               {movie.title}
             </p>
           </div>
-        ))}
+        ))
+      ):(
+        !isLoading &&  <div className="flex bg-gray-600/90 p-4 rounded-3xl justify-center items-center min-w-full">
+            <h1 className="text-white text-3xl font-medium">
+              No trending movies available
+            </h1>
+          </div>
+      )
+        }
       </div>
       </div>
     </section>

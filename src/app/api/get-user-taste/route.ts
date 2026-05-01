@@ -44,9 +44,11 @@ export async function GET(req: Request) {
     const getUserTasteResponse: UserTasteInput = await getUserTaste(user._id); //TODO:- clg user (check user.id and user._id for Oauth users)
     if (!getUserTasteResponse)
       return apiResponse(false, "Error in getting user taste", 400);
+    
 
-    if (!getUserTasteResponse[safeField]) {
-      return apiResponse(
+    if (safeField !== "recentlyLiked") {
+     if (!getUserTasteResponse[safeField]) {
+       return apiResponse(
         false,
         `User's ${safeField} field does not exists`,
         400,
@@ -60,9 +62,10 @@ export async function GET(req: Request) {
         getUserTasteResponse[safeField],
       );
     }
+  }
 
-    getUserTasteResponse[safeField] &&
-      console.log("Field data:- ", getUserTasteResponse[safeField]);
+    
+      // console.log("Field data:- ", getUserTasteResponse[safeField]);
     //now we will check if field is likedGenres or not :-
     if (safeField === "likedGenres") {
       return apiResponse(
@@ -72,7 +75,7 @@ export async function GET(req: Request) {
         getUserTasteResponse[safeField],
       );
     }
-
+    
     //take field data to search from tmdb api
     // we will create func. that search with tmdb id:-
 
@@ -104,11 +107,11 @@ export async function GET(req: Request) {
 
       return movies;
     }
-
+    
+    const slicedArray = safeField==='recentlyLiked'?getUserTasteResponse.favorites.slice(-6):getUserTasteResponse[safeField]
     // now we will return data:-
-
     const res = await Promise.allSettled(
-      getUserTasteResponse[safeField].map(async (id: string) => {
+      slicedArray.map(async (id: string) => {
         const data: MovieData[] | null = await searchMovieByIdWithTMDB(id);
         
         if (!data || !data.length) return null;

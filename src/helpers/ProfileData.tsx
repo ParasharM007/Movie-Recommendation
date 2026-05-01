@@ -1,6 +1,6 @@
 "use client";
 
-import MoviesRow from "@/app/MoviesRow/page";
+import MoviesRow from "components/MoviesRow";
 import SkeletonCard from "components/skeletonCard";
 
 import NotAuthPage from "@/helpers/NotAuthPage";

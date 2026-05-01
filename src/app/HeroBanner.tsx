@@ -28,7 +28,7 @@ export default function HeroBanner() {
 
       
       <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent z-10" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10 pointer-events-none" />
 
       
       <div className="relative z-20 px-6 md:px-16 max-w-2xl">
@@ -60,7 +60,7 @@ export default function HeroBanner() {
       </div>
 
       
-      <div className="absolute bottom-0 w-full h-40 bg-gradient-to-t from-black to-transparent z-20" />
+      <div className="absolute bottom-0 w-full h-40 bg-gradient-to-t from-black to-transparent z-20 pointer-events-none" />
     </section>
     <div className="" ref={targetRef}>
     <TrendingRow />

@@ -4,7 +4,7 @@ import axios, { AxiosResponse } from "axios";
 import { useSession } from "next-auth/react";
 import { ExpectedResponse } from "../types/ExpectedResponse";
 import HeroBanner from "./HeroBanner";
-import MoviesRow from "./MoviesRow/page";
+import MoviesRow from "../../components/MoviesRow";
 
 import { useMemo } from "react";
 import { MovieData } from "@/types/MovieData";
@@ -420,10 +420,10 @@ export default function Home() {
              md:grid-cols-4 
              lg:grid-cols-5 
              xl:grid-cols-6 
-             gap-4"
+             gap-1"
           >
             {[...Array(12)].map((_, i) => (
-              <SkeletonCard key={i} />
+              <SkeletonCard scale={0.75} key={i} />
             ))}
           </div>
         </section>

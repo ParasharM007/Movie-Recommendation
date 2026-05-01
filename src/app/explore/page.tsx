@@ -294,7 +294,7 @@ const allMovies =
   data?.pages.flatMap((page:any) => page.results) || [];
 
   return (
-    <div className="flex ml-20 text-white gap-6 p-6 overflow-x-hidden">
+    <div className="flex ml-10 lg:ml-25 text-white gap-6 p-6 overflow-x-hidden">
       <div className="">
         <FilterSidebar
           filters={filters}
@@ -312,13 +312,13 @@ const allMovies =
         <div>
           {isLoading ? (
             <section>
-              <h2 className="text-3xl text-white font-semibold m-18 p-4 flex gap-2 ">
-                Loading Movies... <Loader2 className="size-8 animate-spin" />
+              <h2 className="text-3xl text-white font-semibold flex gap-2 ">
+                <Loader2 className="size-8 animate-spin" />
               </h2>
 
               <div
                 className="grid 
-  grid-cols-2 
+  grid-cols-1 
   sm:grid-cols-3 
   md:grid-cols-4 
   lg:grid-cols-5 
@@ -326,7 +326,7 @@ const allMovies =
   gap-4"
               >
                 {[...Array(12)].map((_, i) => (
-                  <SkeletonCard key={i} />
+                  <SkeletonCard scale={0.6} key={i} />
                 ))}
               </div>
             </section>
@@ -334,7 +334,7 @@ const allMovies =
             <>
 
               {!isError && allMovies && (
-                <section className="mx-7">
+                <section className="mx-1">
                   <div className="flex gap-4 overflow-x-auto">
                     <MoviesGrid movies={allMovies} />
                   </div>
@@ -343,7 +343,7 @@ const allMovies =
 <div ref={loadMoreRef} className="h-10" />
               {isFetchingNextPage && (
     <div className="text-center mt-4">
-      <Loader2 className="animate-spin mx-auto" />
+      <Loader2 className="animate-spin mx-auto size-8" />
     </div>
   )}
             </>

@@ -21,11 +21,6 @@ const UserTasteSchema = new Schema(
       default: []
     },
 
-    recentlyLiked: {
-      type: [String],
-      default: []
-    },
-
     alreadyWatched: {
       type: [String],
       default: []

@@ -10,7 +10,6 @@ export async function POST(req: Request) {
   const allowedFields = [
     "likedGenres",
     "favorites",
-    "recentlyLiked",
     "alreadyWatched",
     "watchlist",
   ] as const;
@@ -43,35 +42,44 @@ export async function POST(req: Request) {
 
     const values = Array.isArray(data) ? data : [data]; // we will check whether data is already in array or not
     console.log("Values:- ",values)
-    const updateQuery =
-    action === "add"
-      ? { $addToSet: { [field]: { $each: values } } }
-      : { $pull: { [field]: { $in: values } } };
-    // TODO:- we have to check if movie already exists in field?
-    const updatedUser = await UserTasteModel.updateOne(
-  
-      { userId: user._id },
-      { $addToSet: { [field]: { $each: values } } }
-);
+   
+    // TODO:- we have to check if movie already exists in field if user wants to add a movie?
+   if (action === "add") {
+  const existing = await UserTasteModel.findOne({
+    userId: user._id,
+    [field]: { $in: values }
+  });
+
+  if (existing) {
+    return apiResponse(true, `Already exists in user's ${field}`, 200);
+  }
+
+  const updatedUser = await UserTasteModel.updateOne(
+    { userId: user._id },
+    { $addToSet: { [field]: { $each: values } } }
+  );
+
+  if(!updatedUser) return apiResponse(false,`Failed to update user's ${field}`,400)
+    return apiResponse(true, `Data added in ${field} successfully`, 200);
+}
+
+
+if (action === "remove") {
+ const updatedUser = await UserTasteModel.updateOne(
+    { userId: user._id },
+    { $pull: { [field]: { $in: values } } }
+  );
+  if(!updatedUser) return apiResponse(false,`Failed to update user's ${field}`,400)
+    return apiResponse(true, `Data removed from ${field} successfully`, 200);
+}
+
+
+
     
-    if(updatedUser.modifiedCount===0)  //1 for updated successfully
-      return apiResponse(true, "Movie already exists", 200);
-
-
-    
     
 
-      console.log("updweowipgjspjg ",updatedUser)
-      // const updatedUserDTO = {          Removed this from res
-      //   id:updatedUser._id.toString(),
-      //   updatedField:updatedUser[field],
-
-      // }
-    return apiResponse(
-      true,
-      `User's ${field} updated successfully`,
-      200
-    );
+   
+    
   } catch (error) {
     console.log("Error ",error)
     return apiResponse(
