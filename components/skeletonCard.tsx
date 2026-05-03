@@ -2,7 +2,7 @@ import { Card, CardContent } from "components/ui/card";
 import { Skeleton } from "components/ui/skeleton";
 
 export default function SkeletonCard({scale}:any) {
-  console.log("Scale for skeleton:-  ",scale)
+  
   return (
     <div className={`scale-[${scale}] origin-top`}>
     <Card className="bg-[#0f0f0f] border border-gray-800 rounded-2xl overflow-hidden shadow-md w-full">

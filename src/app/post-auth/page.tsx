@@ -38,14 +38,29 @@ useEffect(() => {
 
   return (
 
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6 text-center">
-         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-200">
 
-       <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
-         </div>
-          <p>Setting up your profile...</p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-900 to-black px-4">
+
+      <div className="w-full max-w-md rounded-2xl border border-gray-800 bg-black/60 backdrop-blur-md shadow-2xl p-8 text-center">
+
+        
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-600/20 border border-red-500/30">
+          <Loader2 className="h-8 w-8 animate-spin text-red-500" />
+        </div>
+
+        
+        <h2 className="mt-6 text-xl font-semibold text-white">
+          Setting up your profile...
+        </h2>
+
+        
+        <p className="mt-2 text-sm text-gray-400">
+          Preparing your personalized movie experience 🍿
+        </p>
+
+
       </div>
-      </div>
-  )
+    </div>
+  );
 }
+  

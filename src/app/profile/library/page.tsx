@@ -1,10 +1,10 @@
-"use client";
-import { useRouter } from "next/navigation";
+
+
 import ProfileDetails from "../ProfileDetails";
+import Link from "next/link";
 
 
 const Profile = () => {
-  const router = useRouter();
   const arr = [
     {
       title: "Favourite genres",
@@ -38,16 +38,17 @@ const Profile = () => {
 
     <div className="flex flex-wrap justify-center items-center">
       {arr.map((item,index) => (
-        <div
+        <Link
         key={index}
           className="text-white ml-20 m-2 p-5 cursor-pointer"
-          onClick={() => router.push(item.path)}
+          href={item.path}
+          
         >
           <ProfileDetails
             title={item.title}
             para={item.para}
             />
-        </div>
+        </Link>
       ))}
     </div>
             </div>

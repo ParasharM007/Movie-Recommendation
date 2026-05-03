@@ -1,9 +1,10 @@
+'use client'
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosResponse } from "axios";
 import { ChevronRight, Heading1, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-export function TrendingRow() {
+export function TrendingRow({initialTrending}:any) {
   const router = useRouter()
   const fetchTrendingMovies=async()=>{
    try {
@@ -459,6 +460,10 @@ export function TrendingRow() {
     {
       queryKey:["Trending"],
       queryFn:fetchTrendingMovies,
+       initialData: initialTrending ?? undefined,
+    staleTime: 1000 * 60,   //60 sec
+    refetchOnWindowFocus: false,
+    retry:1
     }
   )
   return (
@@ -469,13 +474,13 @@ export function TrendingRow() {
       {/* <h2 className="text-2xl font-bold  text-white mb-4">
         🔥 Trending Movies -
       </h2> */}
-         <h1 className="text-lg bg-red-700 px-3 py-1 rounded-full font-semibold">
-          🎬 Trending Now 
+         <h1 className="text-lg bg-red-600 px-3 py-1 rounded-full font-semibold">
+          🎬 <span className="text-white"> Trending Now </span>
         </h1>
         <span className="font-extrabold mt-1">----</span>
 <ChevronRight className="w-6 h-6 mt-1.5" />
  
-            {isLoading && <Loader2 className=" animate-spin m-1" />}
+            {isLoading && <Loader2 className=" text-white animate-spin m-1" />}
  
       </div>
 

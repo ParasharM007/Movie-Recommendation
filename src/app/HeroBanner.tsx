@@ -1,3 +1,4 @@
+'use client'
 import Image from "next/image";
 import { Play, Info, TrendingDown } from "lucide-react";
 import { TrendingRow } from "./TrendingRow";
@@ -63,7 +64,7 @@ export default function HeroBanner() {
       <div className="absolute bottom-0 w-full h-40 bg-gradient-to-t from-black to-transparent z-20 pointer-events-none" />
     </section>
     <div className="" ref={targetRef}>
-    <TrendingRow />
+    {/* TODO:- remove this empty space to fix scroll */}
 
     </div>
     </>
