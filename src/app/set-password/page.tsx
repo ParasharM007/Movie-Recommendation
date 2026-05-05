@@ -16,15 +16,20 @@ import { toast } from 'sonner';
 //   }
 // ) => {
 
-export default function setPassword() {
-   const searchParams = useSearchParams();
+export default function Page({searchParams}:{
+    searchParams: { email?: string; otp?: string };
+  }
+  )
+   {
 
   
     const [pass, setPass]= useState('')
     const [confpass, setConfPass]=useState('')
-    const [code, setCode] = useState(() => searchParams.get("otp") || '');
-    const [email, setEmail] = useState(() => searchParams.get("email") || '');
+    const [code, setCode] = useState(searchParams.otp || '');
+    const [email, setEmail] = useState(searchParams.email || '');
     
+    
+
     type responseData = {
         id:string,
         email:string
@@ -118,7 +123,7 @@ export default function setPassword() {
            <button
             onClick={handleSubmit}
             disabled={mutation.isPending}
-            className="w-full cursor-pointer bg-white text- font-medium text-black py-2 rounded-lg hover:bg-black hover:text-white transition"
+            className="w-full cursor-pointer bg-white font-medium text-black py-2 rounded-lg hover:bg-black hover:text-white transition"
           >
             {mutation.isPending ? (<div className='flex justify-center items-center'>
                 Submiting... <Loader2 className=' animate-spin'/>

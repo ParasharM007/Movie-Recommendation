@@ -12,7 +12,7 @@ export default function SetPasswordEmail({ otp,email }: SetPasswordEmailProps) {
     <div>
       <h1>Welcome, This is OTP to set your password:- {otp}</h1>
         <a
-    href={`http://localhost:3000/set-password?otp=${otp}&email=${email}`}
+    href={`https://movie-recommendation-tau-ten.vercel.app/set-password?otp=${otp}&email=${email}`}
     target="_blank"
   >
     Click here to set password

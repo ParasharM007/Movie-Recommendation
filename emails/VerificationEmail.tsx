@@ -11,7 +11,7 @@ export default function VerificationEmail({ otp,email }: VerificationEmailProps)
     <div>
       <h1>Welcome, This is OTP for your account verification:- {otp}</h1>
         <a
-    href={`http://localhost:3000/verify-account?otp=${otp}&email=${email}`}
+    href={`https://movie-recommendation-tau-ten.vercel.app/verify-account?otp=${otp}&email=${email}`}
     target="_blank"
   >
     Click here to verify your account
