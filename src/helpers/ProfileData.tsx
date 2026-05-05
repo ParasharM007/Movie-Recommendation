@@ -12,6 +12,7 @@ import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React from "react";
+import { ErrorType } from "@/types/ErrorType";
 
 type Props={
     field:string,
@@ -20,9 +21,7 @@ type Props={
 export default function ProfileData({ field , message}:Props) {
   const token= useSession()
     const router = useRouter();
-  type ErrorType = {
-    message: string;
-  };
+ 
   const {
     isError,
     isLoading,

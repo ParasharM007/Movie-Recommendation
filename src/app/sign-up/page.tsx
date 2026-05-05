@@ -1,4 +1,5 @@
 'use client'
+import { ErrorType } from '@/types/ErrorType';
 import { ExpectedResponse } from '@/types/ExpectedResponse';
 import { useMutation } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
@@ -23,10 +24,8 @@ const signUp = () => {
         email:string,
         password:string
       }
-      type ErrorRespone={
-        message:string
-      }
-      const mutation = useMutation<ExpectedResponse<null>, AxiosError<ErrorRespone>, payLoad>({mutationFn:async(data:payLoad)=>{
+     
+      const mutation = useMutation<ExpectedResponse<null>, AxiosError<ErrorType>, payLoad>({mutationFn:async(data:payLoad)=>{
         setLoading(true)
         const res= await axios.post(`/api/cred-sign-up`,data)
         return res.data

@@ -1,5 +1,6 @@
 "use client";
 import NotAuthPage from "@/helpers/NotAuthPage";
+import { ErrorType } from "@/types/ErrorType";
 import { ExpectedResponse } from "@/types/ExpectedResponse";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosResponse } from "axios";
@@ -13,9 +14,7 @@ export default function GetGenre() {
   const token = useSession();
   const router = useRouter();
 
-  type ErrorType = {
-    message: string;
-  };
+ 
 
   const {
     isLoading,

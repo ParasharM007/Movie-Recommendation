@@ -42,13 +42,13 @@ export async function GET(req: Request) {
     if (!creditsRes || !creditsRes.data) {
       return apiResponse(false, "Failed to fetch movie data",400)
     }
-    const movies=movieRes.data? movieRes.data:null
+    const movie=movieRes.data? movieRes.data:null
     const videos=videosRes.data? videosRes.data:null
     const credits=creditsRes.data? creditsRes.data:null
 
     
    return apiResponse(true,"Movie data fetched successfully",200,{
-    movies,
+    movie,
     videos,
     credits,
    })

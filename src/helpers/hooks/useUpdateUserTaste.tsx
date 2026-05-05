@@ -1,3 +1,4 @@
+import { ErrorType } from "@/types/ErrorType"
 import { ExpectedResponse } from "@/types/ExpectedResponse"
 import { useMutation } from "@tanstack/react-query"
 import axios, { AxiosError, AxiosResponse } from "axios"
@@ -8,9 +9,7 @@ type Props={
     field:string,
     data:string | string[]
 }
-type ErrorType={
-    message:string
-}
+
 type UserTasteData ={
     id:string,
     email:string,

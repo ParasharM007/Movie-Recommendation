@@ -1,6 +1,7 @@
 'use client'
 
 import { OTPInput } from '@/helpers/sendOTP';
+import { ErrorType } from '@/types/ErrorType';
 import { ExpectedResponse } from '@/types/ExpectedResponse';
 import { useMutation } from '@tanstack/react-query';
 import axios, { AxiosError, AxiosResponse } from 'axios';
@@ -26,9 +27,7 @@ export default function changePassword() {
         id:string,
         email:string
     }
-     type ErrorRespone={
-        message:string
-      }
+     
       type payLoad ={
         newPassword:string,
         oldPassword:string,
@@ -36,7 +35,7 @@ export default function changePassword() {
       }
     const mutation =useMutation<
     ExpectedResponse<responseData>,
-    AxiosError<ErrorRespone>,
+    AxiosError<ErrorType>,
     payLoad
 
     

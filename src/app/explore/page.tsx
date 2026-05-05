@@ -11,6 +11,7 @@ import MoviesGrid from "./MoviesGrid";
 import SkeletonCard from "../../../components/skeletonCard";
 import { Loader2 } from "lucide-react";
 import { MovieData } from "@/types/MovieData";
+import { ErrorType } from "@/types/ErrorType";
 
 
 export default function ExplorePage() {
@@ -208,9 +209,7 @@ type MoviesResponse = {
   total_results: number;
 };
 
-  type ErrorType = {
-    message: string;
-  };
+  
   type payLoad = {
     genres: number[];
     rating: number;

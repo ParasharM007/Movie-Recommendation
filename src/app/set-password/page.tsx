@@ -1,6 +1,7 @@
 'use client'
 
 import { OTPInput } from '@/helpers/sendOTP';
+import { ErrorType } from '@/types/ErrorType';
 import { ExpectedResponse } from '@/types/ExpectedResponse';
 import { useMutation } from '@tanstack/react-query';
 import axios, { AxiosError, AxiosResponse } from 'axios';
@@ -9,31 +10,26 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner';
 
-const setPassword = async( //TODO:- this can't be async , this is wrong 
-  {searchParams}:{
-    searchParams: Promise<{ email?: string; otp?: string }>;
-  }
-) => {
+// const setPassword = async( //TODO:- this can't be async , this is wrong 
+//   {searchParams}:{
+//     searchParams: Promise<{ email?: string; otp?: string }>;
+//   }
+// ) => {
 
-    
+export default function setPassword() {
+   const searchParams = useSearchParams();
+
+  
     const [pass, setPass]= useState('')
     const [confpass, setConfPass]=useState('')
-    const [code , setCode] =useState('')
-    const [email,setEmail]= useState('')
-    const params = await searchParams
-    const Email = params.email
-    const otp = params.otp
-    useEffect(()=>{
-       if(otp) setCode(otp)
-       if(Email) setEmail(Email)
-    })
+    const [code, setCode] = useState(() => searchParams.get("otp") || '');
+    const [email, setEmail] = useState(() => searchParams.get("email") || '');
+    
     type responseData = {
         id:string,
         email:string
     }
-     type ErrorRespone={
-        message:string
-      }
+     
       type payLoad ={
         email:string,
         password:string,
@@ -41,7 +37,7 @@ const setPassword = async( //TODO:- this can't be async , this is wrong
       }
     const mutation =useMutation<
     ExpectedResponse<responseData>,
-    AxiosError<ErrorRespone>,
+    AxiosError<ErrorType>,
     payLoad
 
     
@@ -73,7 +69,7 @@ const setPassword = async( //TODO:- this can't be async , this is wrong
           description:"new password & confirm password must be same"
         }
       )
-     if(email && pass && otp){
+     if(email && pass && code){
 
        const data:payLoad={
          email,
@@ -138,5 +134,3 @@ const setPassword = async( //TODO:- this can't be async , this is wrong
   )
 }
  
-
-export default setPassword

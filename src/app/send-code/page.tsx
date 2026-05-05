@@ -1,4 +1,5 @@
 'use client'
+import { ErrorType } from '@/types/ErrorType';
 import { ExpectedResponse } from '@/types/ExpectedResponse';
 import { useMutation } from '@tanstack/react-query';
 import axios, { AxiosError, AxiosResponse } from 'axios';
@@ -11,9 +12,7 @@ const sendOTP = () => {
     
    
     
-    type ErrorType = {
-    message: string;
-  };
+   
     const mutation = useMutation<
     ExpectedResponse<null>,
     AxiosError<ErrorType>,

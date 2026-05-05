@@ -10,13 +10,13 @@ import { toast } from "sonner";
 import useUpdateUserTaste from "@/helpers/hooks/useUpdateUserTaste";
 import { Heart, Check, Plus } from "lucide-react";
 import { UserTasteInput } from "@/types/UserTaste";
+import { ErrorType } from "@/types/ErrorType";
+import { useFetchMovie } from "@/helpers/hooks/useFetchMovie";
 
 export default function MovieDetailsPage() {
   const [Id, setId] = useState<string>(""); // default: Avengers Infinity War :-299536
-  const [movie, setMovie] = useState<any>({});
-  const [videos, setVideos] = useState<any>({});
-  const [credits ,setCredits]=useState<any>({})
-  const [error, setError] = useState("");
+  
+  // const [error, setError] = useState("");
 
    const { id } =useParams<{ id: string }>();
     if(!id){
@@ -24,64 +24,14 @@ export default function MovieDetailsPage() {
     }
 
     const { mutate } =useUpdateUserTaste()
-   type ErrorType={
-    message:string
-  }
-  type MovieDetails={
-    movies:any,
-    videos:{results:undefined},
-    credits:undefined,
-    userTaste:UserTasteInput
-  }
 
- 
- 
- const mutation = useMutation<
-  ExpectedResponse<MovieDetails>,
-  AxiosError<ErrorType>,
-  string
-  >({
-   mutationFn:async()=>{
-     const res: AxiosResponse = await axios.get(`/api/movie-data?id=${id}`)
+    const { data, error, isError , isLoading } = useFetchMovie(id)
+          const movie = data?.data?.movie;
+          const videos = data?.data?.videos?.results;
+          const credits = data?.data?.credits;
         
-        
-       const value = res.data ?? [];
-       return value
-   }
-  })
-  const fetchMovie = async () => {
-  
-    try {
-      
+   
 
-      mutation.mutate(id,{
-        
-        onSuccess:(value)=>{
-          console.log("Movie Data:-  ",value)
-          setMovie(value.data?.movies);
-          setVideos(value.data?.videos?.results)
-          setCredits(value.data?.credits)
-         
-        },
-        onError:(err)=>{
-          toast.error("Failed to load movie details.",{
-            description:err.response?.data.message ||"something went wrong"
-          })
-          setError("Failed to load movie details.")
-        }
-      })
-
-      
-    } catch (err) {
-      setError("Something went wrong.")
-      
-    }
-  };
-
-  useEffect(() => {
-    fetchMovie();
-    
-  }, [id]);
 
   const trailerLinks = useMemo(() => {
     if (!videos?.length) return [];
@@ -121,14 +71,14 @@ export default function MovieDetailsPage() {
       <main className="mx-auto max-w-5xl px-4 py-10">
         
         
-        {error ? (
+        {isError ? (
           <div className="mb-6 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-100">
-            {error} 
+            {error.response?.data?.message || 'Error occured while fetching movie'} 
           </div>
         ) : null}
 
         
-        {mutation.isPending ? (
+        {isLoading? (
           <div className="flex"><p className="text-white/70">Loading movie details... </p> <Loader2 className="animate-spin mx-3"/></div>
         ) : movie ? (
           <section className="grid grid-cols-1 gap-8 md:grid-cols-[380px_1fr]">

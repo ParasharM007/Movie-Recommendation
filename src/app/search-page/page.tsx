@@ -1,4 +1,5 @@
 "use client";
+import { ErrorType } from "@/types/ErrorType";
 import { ExpectedResponse } from "@/types/ExpectedResponse";
 import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosResponse } from "axios";
@@ -17,9 +18,7 @@ const page = () => {
   const token = useSession();
   if (token) console.log("Token ", token.status);
 
-   type ErrorType={
-    message:string
-  }
+   
 
   const mutation = useMutation<
   ExpectedResponse<any>,
