@@ -1,17 +1,12 @@
 "use client";
 
-import  { useEffect, useMemo, useState } from "react";
-import axios, { AxiosError, AxiosResponse } from "axios";
+import  { useMemo, useState } from "react";
 import { Loader2, Play, Star } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { ExpectedResponse } from "@/types/ExpectedResponse";
-import { toast } from "sonner";
-import useUpdateUserTaste from "@/helpers/hooks/useUpdateUserTaste";
+
 import { Heart, Check, Plus } from "lucide-react";
-import { UserTasteInput } from "@/types/UserTaste";
-import { ErrorType } from "@/types/ErrorType";
-import { useFetchMovie } from "@/helpers/hooks/useFetchMovie";
+import { useFetchMovie } from "@/helpers/hooks/queries/useFetchMovie";
+import { useUpdateUserTaste } from "@/helpers/hooks/mutation/useUpdateUserTaste";
 
 export default function MovieDetailsPage() {
   const [Id, setId] = useState<string>(""); // default: Avengers Infinity War :-299536

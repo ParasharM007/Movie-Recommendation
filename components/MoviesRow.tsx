@@ -55,7 +55,7 @@ export default function MoviesRow({ movies }: any) {
             
             <div className="relative aspect-[2/3] overflow-hidden">
               <img
-                src={`https://image.tmdb.org/t/p/w500${movie.poster}`}
+                src={movie.poster}
                 alt={movie.title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />

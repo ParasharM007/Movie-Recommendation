@@ -1,14 +1,8 @@
 'use client'
 
-import { OTPInput } from '@/helpers/sendOTP';
-import { ErrorType } from '@/types/ErrorType';
-import { ExpectedResponse } from '@/types/ExpectedResponse';
-import { useMutation } from '@tanstack/react-query';
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import { useChangePassword } from '@/helpers/hooks/mutation/useChangePassword';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
-import { routerServerGlobal } from 'next/dist/server/lib/router-utils/router-server-context';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner';
 
 export default function changePassword() {
@@ -18,50 +12,12 @@ export default function changePassword() {
     const [showNewPass, setShowNewPass] = useState(false)
     const [oldPass, setOldPass]= useState('')
     const [showOldPass, setShowOldPass] = useState(false)
-    const router =useRouter()
-  
-  
-   
-   
-    type responseData = {
-        id:string,
-        email:string
-    }
-     
-      type payLoad ={
-        newPassword:string,
-        oldPassword:string,
-       
-      }
-    const mutation =useMutation<
-    ExpectedResponse<responseData>,
-    AxiosError<ErrorType>,
-    payLoad
-
     
-    >({
-        mutationFn:async(data:payLoad)=>{
-            
-            const res:AxiosResponse= await axios.post(`/api/change-password`,data)
-            return res.data
-
-        },
-         onError:(err)=>{
-                 toast.error("Failed to change password",{
-
-                    description: err.response?.data.message || "something went wrong in sending otp",
-                })
-
-            },
-             onSuccess:(res)=>{
-                             toast("Password changed successfully",{
-            
-                                description: res.message || "Password reset successfully",
-                            })
-                        router.push('/profile')
-            
-                        }
-    })
+    const {mutate, isPending}= useChangePassword()
+  
+   
+   
+    
     const handleSubmit=async()=>{
       if(newPass===oldPass) return toast.error("Old & new password can't be same",
         {
@@ -69,12 +25,11 @@ export default function changePassword() {
         }
       )
      if(newPass && oldPass){
-
-       const data:payLoad={
+      mutate({
         newPassword:newPass,
         oldPassword:oldPass
-        }
-        mutation.mutate(data)
+      })
+  
       }else{
 
         toast.error("Details missing",
@@ -135,10 +90,10 @@ export default function changePassword() {
 
            <button
             onClick={handleSubmit}
-            disabled={mutation.isPending}
+            disabled={isPending}
             className="w-full cursor-pointer bg-white text- font-medium text-black py-2 rounded-lg hover:bg-black hover:text-white transition"
           >
-            {mutation.isPending ? (<div className='flex justify-center items-center'>
+            {isPending ? (<div className='flex justify-center items-center'>
                 Submiting... <Loader2 className=' animate-spin'/>
             </div>
                 

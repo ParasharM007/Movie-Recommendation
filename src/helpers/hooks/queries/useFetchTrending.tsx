@@ -449,7 +449,7 @@ const fetchTrendingMovies=async():Promise<MovieData[]>=>{
   }
 // export async function useFetchTrendingHook(initialTrending:any) {  // this is only api fetching func, not hook
 
-export const useFetchTrending = (initialTrending:MovieData[])=>{
+export const useFetchTrending = (initialTrending:MovieData[] | null)=>{
 
 
      return useQuery<MovieData[],ErrorType>(

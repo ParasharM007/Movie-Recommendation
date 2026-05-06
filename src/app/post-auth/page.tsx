@@ -28,10 +28,15 @@ export default function PostAuth() {
 useEffect(() => {
   const genres = JSON.parse(localStorage.getItem("guestLikedGenres") || "[]");
 
-  if (session && genres.length) {
-    syncGenresMutation.mutate(genres);
-  }
-  router.replace(`/`)
+ if (session && genres.length) {
+   syncGenresMutation.mutate(genres, {
+      onSettled: () => {
+         router.replace("/")
+      }
+   })
+} else {
+   router.replace("/")
+}
 }, [session]);
 
 

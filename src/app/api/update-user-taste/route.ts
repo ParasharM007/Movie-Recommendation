@@ -40,11 +40,14 @@ export async function POST(req: Request) {
       return apiResponse(false, "Invalid details", 400);
     }
 
-    const values = Array.isArray(data) ? data : [data]; // we will check whether data is already in array or not
+    const values = Array.isArray(data) ? data : [data]; 
     console.log("Values:- ",values)
    
-    // TODO:- we have to check if movie already exists in field if user wants to add a movie?
-   if (action === "add") {
+    if (action === "add") {
+      
+      // TODO:- we have to check if movie already exists in field if user wants to add a movie?- DONE
+     if(field!=='likedGenres'){
+     
   const existing = await UserTasteModel.findOne({
     userId: user._id,
     [field]: { $in: values }
@@ -53,6 +56,39 @@ export async function POST(req: Request) {
   if (existing) {
     return apiResponse(true, `Already exists in user's ${field}`, 200);
   }
+}
+  if(field==='likedGenres'){
+      const userTaste = await UserTasteModel.findOne({
+      userId: user._id
+    });
+
+    const existingGenres = userTaste?.likedGenres || [];
+
+    const uniqueNewGenres = values.filter(
+      (genre: string) => !existingGenres.includes(genre)
+    );
+
+
+    const updatedGenres = [
+      ...existingGenres,
+      ...uniqueNewGenres
+    ];
+
+
+    const latestFiveGenres = updatedGenres.slice(-5);
+
+    await UserTasteModel.updateOne(
+      { userId: user._id },
+      {
+        $set: {
+          likedGenres: latestFiveGenres
+        }
+      }
+    );
+
+    return apiResponse(true, "Genres updated successfully", 200);
+  }
+
 
   const updatedUser = await UserTasteModel.updateOne(
     { userId: user._id },

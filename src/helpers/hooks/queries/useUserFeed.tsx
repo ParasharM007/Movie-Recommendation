@@ -318,7 +318,7 @@ const recommedationsFromLikedGenres = async ():Promise<MovieData[]> => {
     // ];
   };
 
-  export const useUserFeed=(initialMovies:MovieData[])=>{
+  export const useUserFeed=(initialMovies:MovieData[] | null)=>{
     
 
   const { data: session } = useSession();

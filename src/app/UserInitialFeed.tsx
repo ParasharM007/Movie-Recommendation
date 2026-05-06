@@ -10,10 +10,10 @@ import { useMemo } from "react";
 import { MovieData } from "@/types/MovieData";
 import { Loader2 } from "lucide-react";
 import SkeletonCard from "components/skeletonCard";
-import { useUserFeed } from "@/helpers/hooks/useUserFeed";
+import { useUserFeed } from "@/helpers/hooks/queries/useUserFeed";
 
 
-export default function UserInitialFeed({initialMovies}:any) {
+export default function UserInitialFeed({initialMovies}:{initialMovies:MovieData[] | null}) {
   
    const {
     data: movies,

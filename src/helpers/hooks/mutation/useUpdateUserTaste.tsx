@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query"
 import axios, { AxiosError, AxiosResponse } from "axios"
 import { toast } from "sonner"
 
-type Props={
+type payLoad={
     action:string,
     field:string,
     data:string | string[]
@@ -15,10 +15,10 @@ type UserTasteData ={
     email:string,
     updatedField:string[]
   }
-export default function useUpdateUserTaste(){
+export const useUpdateUserTaste=()=>{
 
-    const mutation = useMutation<ExpectedResponse<UserTasteData>,AxiosError<ErrorType>,Props>({
-        mutationFn:async(data:Props)=>{
+    return useMutation<ExpectedResponse<UserTasteData>,AxiosError<ErrorType>,payLoad>({
+        mutationFn:async(data:payLoad)=>{
             const res:AxiosResponse= await axios.post(`/api/update-user-taste`,data)
             return res.data
         },
@@ -32,6 +32,5 @@ export default function useUpdateUserTaste(){
         }
        
     })
-return mutation
 
 }

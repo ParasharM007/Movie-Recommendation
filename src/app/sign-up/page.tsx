@@ -1,4 +1,5 @@
 'use client'
+import { useSignUp } from '@/helpers/hooks/mutation/useSignUp';
 import { ErrorType } from '@/types/ErrorType';
 import { ExpectedResponse } from '@/types/ExpectedResponse';
 import { useMutation } from '@tanstack/react-query';
@@ -16,20 +17,12 @@ const signUp = () => {
      const [email, setEmail] = useState("");
       const [password, setPassword] = useState("");
       const [loading, setLoading] = useState(false);
-      const router = useRouter()
+      const {mutate}=useSignUp()
+      
       
 
       
-      type payLoad ={
-        email:string,
-        password:string
-      }
-     
-      const mutation = useMutation<ExpectedResponse<null>, AxiosError<ErrorType>, payLoad>({mutationFn:async(data:payLoad)=>{
-        setLoading(true)
-        const res= await axios.post(`/api/cred-sign-up`,data)
-        return res.data
-      }})
+      
       const handleRegister=async()=>{
 
 
@@ -37,26 +30,7 @@ const signUp = () => {
           toast('Please provide your credentials')
           return
         }
-        mutation.mutate({email, password},{
-          onSuccess:()=>{
-             toast("User Registered",
-              {
-                description:"user successfully registered"
-              }
-             )
-             router.replace('/genres-selection')
-          },
-          onError:(error)=>{
-             toast(error.response?.data?.message ||
-                            error.message || "Error in registeration",
-            
-             )
-          },
-          onSettled:()=>{
-            setLoading(false)
-          }
-      
-        })
+        mutate({email, password})
         
 
       }

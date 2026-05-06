@@ -415,7 +415,9 @@ export async function GET(req: Request) {
                   id: tmdbData.id,
                   title: tmdbData.title || tmdbData.name,
                   genre: rec.title,
-                  poster: tmdbData.poster_path,
+                  poster: tmdbData.poster_path
+            ? `https://image.tmdb.org/t/p/w500${tmdbData.poster_path}`
+            : null,
                   rating: tmdbData.vote_average,
                   overview: tmdbData.overview,
                   reason: item.reason, // AI personalization

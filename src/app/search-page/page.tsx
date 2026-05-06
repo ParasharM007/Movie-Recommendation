@@ -1,9 +1,5 @@
 "use client";
-import { ErrorType } from "@/types/ErrorType";
-import { ExpectedResponse } from "@/types/ExpectedResponse";
-import { useMutation } from "@tanstack/react-query";
-import axios, { AxiosError, AxiosResponse } from "axios";
-import SkeletonCard from "components/skeletonCard";
+import { useSearchQuery } from "@/helpers/hooks/queries/useSearchQuery";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -12,30 +8,18 @@ import { toast } from "sonner";
 
 const page = () => {
   const [query, setQuery] = useState("");
-  const [recommendations, setRecommendations]:Array<any> = useState([]);
+  const [tempQuery, setTempQuery]= useState("");
   const router= useRouter()
 
   const token = useSession();
   if (token) console.log("Token ", token.status);
 
-   
-
-  const mutation = useMutation<
-  ExpectedResponse<any>,
-  AxiosError<ErrorType>,
-  string
-  >({
-   mutationFn:async()=>{
-     const res: AxiosResponse = await axios.get(
-        `/api/search-movie?query=${query}`,
-      );
-        
-        
-       const value = res.data?? [];
-       return value
-   }
-  })
-
+  const {data, isLoading ,isError}=useSearchQuery(tempQuery)
+  const recommendations = Array.isArray(data)
+   ? data
+   : data
+   ? [data]
+   : []
   const aiResponse = async (e:any) => {
     if (!query) {
     toast.error("Please search something first", {
@@ -44,29 +28,11 @@ const page = () => {
     return
     
   }
-
- 
-    if (query) {
+       if (query) {
       try {
-      mutation.mutate(query,{
-        onSuccess:(value)=>{
-          toast.success("Data fetched successfully",{
-            description:value.message || ""
-          })
-          setRecommendations(Array.isArray(value.data) ? value.data : [value.data]);
-        },
-        onError:(err)=>{
-            toast.error("Error during searching data",
-              {
-                description:err.response?.data.message || "error occured"
-              }
-            )
-        },
-       
-      })
+      setTempQuery(query)
 
-
-      } catch (error) {
+    } catch (error) {
         toast.error("Error in getting data", {
           description: "something went wrong while searching data",
         });
@@ -92,7 +58,7 @@ const page = () => {
             onChange={(e)=>setQuery(e.target.value)}
             onKeyDown={(e)=>{ if(e.key==="Enter") aiResponse(e)}}
           />
-           {!mutation.isPending ? (<button className="text-white m-1 p-2 px-5 cursor-pointer border rounded-full border-gray-100" onClick={(e)=>aiResponse(e)}>Search</button>):(<Loader2  className="animate-spin m-1 mt-3 "/>)}
+           {!isLoading? (<button className="text-white m-1 p-2 px-5 cursor-pointer border rounded-full border-gray-100" onClick={(e)=>aiResponse(e)}>Search</button>):(<Loader2  className="animate-spin m-1 mt-3 "/>)}
         </div>
         <div
           className="flex items-center justify-between
@@ -107,8 +73,8 @@ const page = () => {
 
         
       <section className=" flex flex-col items-center px-6 md:px-12 mt-10">
+        {isError&& <h2 className="text-3xl font-semibold mb-6">Couldn't find the movie, try similar query</h2>}
         {recommendations.length!==0 && <h2 className="text-2xl font-semibold mb-6">Search Results</h2>}
-
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {recommendations.length!==0 &&  recommendations.map((movie:any, index:any) => (
             <div
@@ -145,12 +111,15 @@ const page = () => {
 
                 
                { token.status ==='authenticated' && <div className="mt-4">
+                  {movie.reason && <>
                   <span className="text-xs text-purple-400 font-medium">
                     Why suggested
                   </span>
                   <p className="text-xs text-gray-200 mt-1">
                     {movie.reason}
                   </p>
+                  </>
+                  }
                 </div>}
               </div>
             </div>

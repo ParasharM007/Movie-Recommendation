@@ -1,12 +1,13 @@
 import { MovieData } from "@/types/MovieData";
 import HeroBanner from "./HeroBanner";
-import { TrendingRow } from "./TrendingRow";
+
 import UserInitialFeed from "./UserInitialFeed";
 import { ExpectedResponse } from "@/types/ExpectedResponse";
+import TrendingRow from "./TrendingRow";
 
 
 
-async function getMoviesForFeed():Promise<MovieData[]> {
+async function getMoviesForFeed():Promise<MovieData[] | null> {
  try {
   const res = await fetch(`${process.env.NEXTAUTH_URL}/api/movie-suggest`, {
     next: { revalidate: 60 }, // 60 seconds 
@@ -14,7 +15,7 @@ async function getMoviesForFeed():Promise<MovieData[]> {
  
   if (!res.ok) {
     console.log("Movies couldn't fetch from server component passing null for react query")
-    return []
+    return null
   }
  
   const data = await res.json();
@@ -27,7 +28,7 @@ async function getMoviesForFeed():Promise<MovieData[]> {
   
  }
 }
-async function getTrendingMovies():Promise<MovieData[]> {
+async function getTrendingMovies():Promise<MovieData[] | null> {
  try {
   const res = await fetch(`${process.env.NEXTAUTH_URL}/api/trending-movies`, {
     next: { revalidate: 60 }, // 60 seconds 
@@ -35,7 +36,7 @@ async function getTrendingMovies():Promise<MovieData[]> {
  
   if (!res.ok) {
     console.log("Tendings couldn't fetch from server component passing null for react query")
-    return []; 
+    return null
     
   }
  
@@ -49,8 +50,8 @@ async function getTrendingMovies():Promise<MovieData[]> {
  }
 }
 export default async function Home() {
- const movies:MovieData[]= await getMoviesForFeed();
- const trendings:MovieData[] = await getTrendingMovies()
+ const movies:MovieData[] | null= await getMoviesForFeed();
+ const trendings:MovieData[] | null= await getTrendingMovies()
 
   
  return <>

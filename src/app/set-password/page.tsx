@@ -1,5 +1,6 @@
 'use client'
 
+import { useSetPassword } from '@/helpers/hooks/mutation/useSetPassword';
 import { OTPInput } from '@/helpers/sendOTP';
 import { ErrorType } from '@/types/ErrorType';
 import { ExpectedResponse } from '@/types/ExpectedResponse';
@@ -10,11 +11,6 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner';
 
-// const setPassword = async( //TODO:- this can't be async , this is wrong 
-//   {searchParams}:{
-//     searchParams: Promise<{ email?: string; otp?: string }>;
-//   }
-// ) => {
 
 export default function Page({searchParams}:{
     searchParams: { email?: string; otp?: string };
@@ -27,47 +23,10 @@ export default function Page({searchParams}:{
     const [confpass, setConfPass]=useState('')
     const [code, setCode] = useState(searchParams.otp || '');
     const [email, setEmail] = useState(searchParams.email || '');
+    const { mutate, isPending }=useSetPassword()
     
-    
 
-    type responseData = {
-        id:string,
-        email:string
-    }
-     
-      type payLoad ={
-        email:string,
-        password:string,
-        otp:string
-      }
-    const mutation =useMutation<
-    ExpectedResponse<responseData>,
-    AxiosError<ErrorType>,
-    payLoad
-
-    
-    >({
-        mutationFn:async(data:payLoad)=>{
-            
-            const res:AxiosResponse= await axios.post(`/api/setnew-forget-passw`,data)
-            return res.data
-
-        },
-         onError:(err)=>{
-                 toast.error("Failed to set password",{
-
-                    description: err.response?.data.message || "something went wrong in sending otp",
-                })
-
-            },
-             onSuccess:(res)=>{
-                             toast("Password set successfully",{
-            
-                                description: res.message || "Password set/reset successfully",
-                            })
-            
-                        }
-    })
+   
     const handleSubmit=async()=>{
       if(pass!==confpass) return toast.error("Password fields mismatch",
         {
@@ -75,13 +34,12 @@ export default function Page({searchParams}:{
         }
       )
      if(email && pass && code){
-
-       const data:payLoad={
-         email,
-         password:pass,
-         otp:code
-        }
-        mutation.mutate(data)
+     mutate({
+      email,
+      password:pass,
+      otp:code
+     })
+       
       }else{
 
         toast.error("Details missing",
@@ -122,10 +80,10 @@ export default function Page({searchParams}:{
 
            <button
             onClick={handleSubmit}
-            disabled={mutation.isPending}
+            disabled={isPending}
             className="w-full cursor-pointer bg-white font-medium text-black py-2 rounded-lg hover:bg-black hover:text-white transition"
           >
-            {mutation.isPending ? (<div className='flex justify-center items-center'>
+            {isPending ? (<div className='flex justify-center items-center'>
                 Submiting... <Loader2 className=' animate-spin'/>
             </div>
                 

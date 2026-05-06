@@ -1,4 +1,5 @@
 "use client";
+import { useUpdateUserTaste } from "@/helpers/hooks/mutation/useUpdateUserTaste";
 import { ErrorType } from "@/types/ErrorType";
 import { ExpectedResponse } from "@/types/ExpectedResponse";
 import { useMutation } from "@tanstack/react-query";
@@ -30,6 +31,7 @@ export default function GenreSelection() {
   const [loading, setLoading] = useState(false);
 
   const token = useSession();
+  const { mutate }=useUpdateUserTaste()
 
   const toggleGenre = (genre: string) => {
     if (selectedGenres.includes(genre)) {
@@ -40,30 +42,7 @@ export default function GenreSelection() {
     }
   };
 
-  type payLoad = {
-    action: string;
-    field: string;
-    data: string[];
-  };
-  
-  type UserTasteData ={
-    id:string,
-    email:string,
-    updatedField:string[]
-  }
-  const mutation = useMutation<
-    ExpectedResponse<UserTasteData>,
-    AxiosError<ErrorType>,
-    payLoad
-  >({
-    mutationFn: async (data: payLoad) => {
-      setLoading(true);
-      const res:AxiosResponse = await axios.post(`/api/update-user-taste`, data);
-      return res.data;
-    },
-    
-  },);
-  const handleGenresSubmission = async () => {
+ const handleGenresSubmission = async () => {
     const data = {
       action: "add",
       field: "likedGenres",
@@ -72,24 +51,9 @@ export default function GenreSelection() {
     if(selectedGenres.length!==0){
 
     if (token) {
-      mutation.mutate(data, {
-        onSuccess: (res) => {
-          toast("Genres added to liked list", {
-            description: res.message || "Success",
-          });
-        },
-        onError: (err) => {
-          toast("Error in adding genres", {
-            description:
-              err.response?.data?.message ||
-              err.message ||
-              "Something went wrong",
-          });
-        },
-        onSettled: () => {
-          setLoading(false);
-        },
-      });
+       
+       mutate(data)
+    
     }else{
       localStorage.setItem('likedGenres',JSON.stringify(selectedGenres))
     }

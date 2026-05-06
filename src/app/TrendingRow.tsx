@@ -1,10 +1,10 @@
 'use client'
-import { useFetchTrending } from "@/helpers/hooks/useFetchTrending";
+import { useFetchTrending } from "@/helpers/hooks/queries/useFetchTrending";
 import { MovieData } from "@/types/MovieData";
 import { ChevronRight, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-export async function TrendingRow({initialTrending}:{initialTrending:MovieData[]}) {
+export default function TrendingRow({initialTrending}:{initialTrending:MovieData[] | null}) {
   const router = useRouter()
 
   const {data:movies, isError, isLoading} = useFetchTrending(initialTrending)
@@ -37,7 +37,7 @@ export async function TrendingRow({initialTrending}:{initialTrending:MovieData[]
         className="flex-shrink-0 w-[160px] md:w-[200px] cursor-pointer transition-transform duration-300 hover:scale-110"
       >
             <img
-              src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+              src={movie.poster}
               className="rounded-lg"
               alt={movie.title}
             />
