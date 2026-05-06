@@ -1,7 +1,6 @@
 'use client'
 import Image from "next/image";
 import { Play, Info, TrendingDown } from "lucide-react";
-import { TrendingRow } from "./TrendingRow";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
 
