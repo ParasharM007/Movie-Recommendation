@@ -94,10 +94,10 @@ export async function generateRecommendations(
 
   const content = completion.choices[0]?.message?.content;
 
-  console.log(
-    "Ai response before responding and parsing in JSON.parse ",
-    content
-  );
+  // console.log(
+  //   "Ai response before responding and parsing in JSON.parse ",
+  //   content
+  // );
     if (!content){
 
       return {

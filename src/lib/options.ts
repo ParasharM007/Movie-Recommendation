@@ -43,16 +43,17 @@ export const authOptions:NextAuthOptions = {
           if(!isPasswordCorrect){
             throw new Error("Incorrect Password")
           }
-//      return {
-//   _id: user._id.toString(),  
-//   email: user.email,
-// }
-return user 
+return {
+  _id: user._id.toString(),
+  email: user.email,
+  isVerified: user.isVerified,
+};
+// return user 
 
 
       } catch (error:any) {
-        throw new Error(error)
-      }
+  throw new Error(error.message)
+}
     },
     
     
@@ -90,17 +91,25 @@ callbacks: {
     return true;
   },
 
-  async jwt({ token, user }) {
-  await dbConnect();
+//   async jwt({ token, user }) {     //DB in this caused BUG , session return null
+//   await dbConnect();
 
-  // First time sign-in (OAuth or credentials)
-  if (user?.email) {
-    const dbUser = await UserModel.findOne({ email: user.email });
+//   // First time sign-in (OAuth or credentials)
+//   if (user?.email) {
+//     const dbUser = await UserModel.findOne({ email: user.email });
 
-    if (dbUser) {
-      token._id = dbUser._id.toString();
-      token.isVerified = dbUser.isVerified;
-    }
+//     if (dbUser) {
+//       token._id = dbUser._id.toString();
+//       token.isVerified = dbUser.isVerified;
+//     }
+//   }
+
+//   return token;
+// }
+async jwt({ token, user }) {
+  if (user) {
+    token._id = user._id;
+    token.isVerified = user.isVerified;
   }
 
   return token;

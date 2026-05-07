@@ -21,14 +21,15 @@ type Props={
 export default function ProfileData({ field , message}:Props) {
   const token= useSession()
     const router = useRouter();
- 
-  const {
-    isError,
-    isLoading,
-    data: movies,
-  } = useQuery<ExpectedResponse<(MovieData[] | null)[]>, AxiosError<ErrorType>>(
+    
+    
+    const {
+      isError,
+      isLoading,
+      data: movies,
+    } = useQuery<ExpectedResponse<(MovieData[] | null)[]>, AxiosError<ErrorType>>(
     {
-      queryKey: ["watch-list"],
+      queryKey: [field],
       queryFn: async () => {
         const res: AxiosResponse = await axios.get(
           `/api/get-user-taste?field=${field}`,
@@ -37,6 +38,7 @@ export default function ProfileData({ field , message}:Props) {
       },
     },
   );
+  
    
      if (token.status === "unauthenticated") {
       return (
@@ -93,7 +95,7 @@ export default function ProfileData({ field , message}:Props) {
            {!isError && movies &&
               <div className="ml-10">
 
-              <MoviesRow movies={movies} />
+              <MoviesRow movies={movies} field ={field} />
               </div>
            }
         </>

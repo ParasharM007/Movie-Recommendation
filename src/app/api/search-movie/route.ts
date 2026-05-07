@@ -34,6 +34,7 @@ export async function GET(req: Request) {
 
     const session = await getServerSession(authOptions);
     const user: User = session?.user as User;
+    
 
     async function searchQueryWithTMDB(query: string, reason?:string) {
       const res = await axios.get(`${TMDB_BASE_URL}/search/movie`, {

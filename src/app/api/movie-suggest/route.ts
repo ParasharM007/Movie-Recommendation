@@ -1,7 +1,7 @@
 // export const runtime = "nodejs";
 import { generateRecommendations } from "@/lib/groq";
 import { getServerSession, User } from "next-auth";
-import { authOptions } from "../../../lib/options";
+import { authOptions } from "@/lib/options";
 import { apiResponse } from "@/lib/apiResponse";
 import { getUserTaste } from "@/lib/getUserTaste";
 
@@ -15,12 +15,15 @@ export async function GET(req: Request) {
   
   let TMDB_API_KEY = process.env.TMDB_API_KEY;
   let TMDB_BASE_URL = process.env.TMDB_BASE_URL
-  await dbConnect();
+  
   try {
    
 
     const session = await getServerSession(authOptions);
     const user: User = session?.user as User;
+    const requestId = Math.random().toString(36).slice(2);
+
+console.log("REQ:", requestId, "SESSION:", session);
 
     if (!session || !user) {
       console.log("Sess:- ", session);
@@ -45,12 +48,14 @@ export async function GET(req: Request) {
     } else {
       //Now user is logged in :-
       //we will take user's taste by UserTaste collection:-
+      await dbConnect();
 
       if (user._id) {
       const userTaste: UserTasteInput = await getUserTaste(user._id);
         console.log("UserTaste:- ", userTaste);
             const titles = await generateRecommendations(userTaste);
             console.log("Ai data currently for home page:- ",titles)
+            console.log("Ai data currently for home page:- ")
             
 
           //If recommendations are not available , we will just send response to show hardcoded genres by TMDB:-
@@ -436,7 +441,7 @@ export async function GET(req: Request) {
             return apiResponse(
               false,
               `No movies found from TMDB after ai suggestions`,
-              404,
+              400,
             );
           }
   

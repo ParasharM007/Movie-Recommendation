@@ -37,6 +37,7 @@ export async function GET(req: Request) {
 
     const session = await getServerSession(authOptions);
     const user: User = session?.user as User;
+    console.log("Session available for user taste",session)
 
     if (!user || !user._id || !session)
       return apiResponse(false, "Not Authorized", 401);

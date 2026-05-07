@@ -29,7 +29,7 @@ export async function getHomeData() {
           
         );
 
-        if (data) console.log("Get Home Page data ", data);
+        // if (data) console.log("Get Home Page data ", data);
 
         //we have to return this kind of data (same as retun type after ai search):-
         // id: tmdbData.id,
