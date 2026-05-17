@@ -1,7 +1,6 @@
 "use client";
 
 import MoviesRow from "components/MoviesRow";
-import SkeletonCard from "components/skeletonCard";
 
 import NotAuthPage from "@/helpers/NotAuthPage";
 import { ExpectedResponse } from "@/types/ExpectedResponse";
@@ -13,6 +12,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { ErrorType } from "@/types/ErrorType";
+import MoviesRowSkeleton from "components/MoviesRowSkeleton";
 
 type Props={
     field:string,
@@ -73,22 +73,9 @@ export default function ProfileData({ field , message}:Props) {
       )}
       {isLoading ? (
         <section>
-          <h2 className="text-3xl text-white font-semibold m-18 p-4 flex gap-2 ">
-            Loading Movies... <Loader2 className="size-8 animate-spin" />
-          </h2>
+          <MoviesRowSkeleton />
 
-          <div className="grid 
-  grid-cols-2 
-  sm:grid-cols-3 
-  md:grid-cols-4 
-  lg:grid-cols-5 
-  xl:grid-cols-6 
-  gap-4">
-  
-  {[...Array(12)].map((_, i) => (
-    <SkeletonCard key={i} />
-  ))}
-</div>
+         
         </section>
       ) : ( 
         <>

@@ -11,6 +11,7 @@ import axios from "axios";
 import { getHomeData } from "@/lib/getHomeData";
 import { MovieData } from "@/types/MovieData";
 import { UserTasteInput } from "@/types/UserTaste";
+import { searchQueryWithTMDB } from "@/helpers/services/tmdbSearchAPI";
 export async function GET(req: Request) {
   
   let TMDB_API_KEY = process.env.TMDB_API_KEY;
@@ -55,7 +56,6 @@ console.log("REQ:", requestId, "SESSION:", session);
         console.log("UserTaste:- ", userTaste);
             const titles = await generateRecommendations(userTaste);
             console.log("Ai data currently for home page:- ",titles)
-            console.log("Ai data currently for home page:- ")
             
 
           //If recommendations are not available , we will just send response to show hardcoded genres by TMDB:-
@@ -375,68 +375,28 @@ console.log("REQ:", requestId, "SESSION:", session);
 
       if (titles.recommendations) {
         console.log("Searching after ai suggestions")
-        async function searchTMDB(title: string, type: "movie" | "tv") {
-          // const endpoint = type === "movie" ? "search/movie" : "search/tv";
-
-       try {
-           const res = await axios.get(
-             // `${TMDB_BASE_URL}/${endpoint}?query=${encodeURIComponent(title)}&api_key=${TMDB_API_KEY}&include_adult=false`,
-              
-       `${TMDB_BASE_URL}/search/movie`,
-       {
-         params: {
-           api_key: TMDB_API_KEY,
-           query: title,
-           include_adult: false,
-           language: "en-US",
-         },
-         timeout: 10000,
-       }
-     );
-           
- 
-           if (!res.data) return null;
-           return res.data.results?.[0] || null; // take best match
-       } catch (error:any) {
-        console.log("TMDB error:", error.message);
-    return null;
-       }
-        }
+      
 
         let tmdbResults: MovieData[];
 
-          //Data is required for home page:-
+          //Data for home page:-
+          
           const rawResults: (MovieData | null)[] = await Promise.all(
             titles.recommendations.flatMap((rec: any) =>
-              rec.items.map(async (item: any) => {
-               try {
-                const tmdbData: any = await searchTMDB(
-                  `${item.title}`,
-                  item.type as "movie" | "tv",
+              rec.items.flatMap(async (item: any) => {
+               
+                const tmdbData = await searchQueryWithTMDB(
+                  item.title, item.reason, rec.title
                 );
-                if (!tmdbData) return null;
-                
-                return {
-                  id: tmdbData.id,
-                  title: tmdbData.title || tmdbData.name,
-                  genre: rec.title,
-                  poster: tmdbData.poster_path
-            ? `https://image.tmdb.org/t/p/w500${tmdbData.poster_path}`
-            : null,
-                  rating: tmdbData.vote_average,
-                  overview: tmdbData.overview,
-                  reason: item.reason, // AI personalization
-                };
-                
-      } catch {
-        return null; 
-      }
-              }),
+                return  tmdbData
+               
+              }
+            ),
             ),
           );
           tmdbResults = rawResults.filter(
             (movie): movie is MovieData => movie !== null,
-          );
+          ).flat();
           if (tmdbResults.length === 0) {
             return apiResponse(
               false,
@@ -447,7 +407,7 @@ console.log("REQ:", requestId, "SESSION:", session);
   
           return apiResponse(
             true,
-            "AI based recommendations fetched according to search",
+            "AI based recommendations fetched according for user feed",
             200,
             tmdbResults,
           );

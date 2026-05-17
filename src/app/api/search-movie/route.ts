@@ -2,6 +2,7 @@
 // if ai fails then directly tmdb
 //if logged out user, then directly tmdb
 
+import { searchQueryWithTMDB } from "@/helpers/services/tmdbSearchAPI";
 import { apiResponse } from "@/lib/apiResponse";
 import dbConnect from "@/lib/dbConnect";
 import { getHomeData } from "@/lib/getHomeData";
@@ -35,37 +36,6 @@ export async function GET(req: Request) {
     const session = await getServerSession(authOptions);
     const user: User = session?.user as User;
     
-
-    async function searchQueryWithTMDB(query: string, reason?:string) {
-      const res = await axios.get(`${TMDB_BASE_URL}/search/movie`, {
-        params: {
-          query: query,
-          api_key: TMDB_API_KEY,
-          include_adult: false,
-        },
-      });
-
-      if (!res.data) return null;
-       
-      const temp = user?( res.data.results?.[0] || null): (res.data.results)  // we will assign whole results in temp if user is not logged in
-
-      const arr = Array.isArray(temp) ? temp : [temp];
-      const movies: MovieData[] = arr.map((tmdbData: any) => ({
-    
-
-        id: tmdbData.id,
-        title: tmdbData.title || tmdbData.name,
-        genre: null,
-        poster: tmdbData.poster_path
-          ? `https://image.tmdb.org/t/p/w500${tmdbData.poster_path}`
-          : null,
-        rating: tmdbData.vote_average ?? null,
-        overview: tmdbData.overview ?? "",
-        reason: reason ?? null, // no AI reason for logged out user
-      }));
-      
-      return movies;
-    }
     if (!session || !user) {
       // User should be able to search via TMDB search:-
 

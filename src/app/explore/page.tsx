@@ -8,10 +8,10 @@ import { useInfiniteQuery, QueryFunctionContext } from "@tanstack/react-query";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { ExpectedResponse } from "@/types/ExpectedResponse";
 import MoviesGrid from "./MoviesGrid";
-import SkeletonCard from "../../../components/skeletonCard";
 import { Loader2 } from "lucide-react";
 import { MovieData } from "@/types/MovieData";
 import { ErrorType } from "@/types/ErrorType";
+import MoviesGridSkeleton from "components/MoviesGridSkeleton";
 
 
 export default function ExplorePage() {
@@ -271,7 +271,7 @@ useEffect(() => {
     
   },
  {
-    rootMargin: "200px", // 👈 trigger BEFORE reaching bottom
+    rootMargin: "200px", // trigger BEFORE reaching bottom
     threshold: 0,
   });
   
@@ -315,19 +315,7 @@ const allMovies =
                 <Loader2 className="size-8 animate-spin" />
               </h2>
 
-              <div
-                className="grid 
-  grid-cols-1 
-  sm:grid-cols-3 
-  md:grid-cols-4 
-  lg:grid-cols-5 
-  xl:grid-cols-6 
-  gap-4"
-              >
-                {[...Array(12)].map((_, i) => (
-                  <SkeletonCard scale={0.6} key={i} />
-                ))}
-              </div>
+               <MoviesGridSkeleton />
             </section>
           ) : (
             <>

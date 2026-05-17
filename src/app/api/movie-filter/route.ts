@@ -3,10 +3,9 @@ import dbConnect from "@/lib/dbConnect";
 import { MovieData } from "@/types/MovieData";
 import axios from "axios";
 
-
 export async function POST(req: Request) {
   await dbConnect();
-  let TMDB_BASE_URL = process.env.TMDB_BASE_URL
+  let TMDB_BASE_URL = process.env.TMDB_BASE_URL;
   try {
     const body = await req.json();
     const { genres, rating, yearFrom, yearTo, sortBy, page } = body as {
@@ -15,7 +14,7 @@ export async function POST(req: Request) {
       yearFrom: string;
       yearTo: string;
       sortBy: string;
-      page:number;
+      page: number;
     };
 
     if (body) console.log("Filters:- ", body);
@@ -34,9 +33,9 @@ export async function POST(req: Request) {
       if (yearTo) params.append("primary_release_date.lte", `${yearTo}-12-31`);
 
       if (sortBy) params.append("sort_by", sortBy);
-      
-      params.append("vote_count.gte", "20");   // to get movie with minimum vote count of 20
-      params.append("page", page.toString())
+
+      params.append("vote_count.gte", "20"); // to get movie with minimum vote count of 20
+      params.append("page", page.toString());
 
       return params.toString();
     };
@@ -45,58 +44,47 @@ export async function POST(req: Request) {
     if (query) console.log("query:- ", query);
 
     //TODO:- send this query to tmdb api
-  
- 
-        const { data } = await axios.get(
-         `${TMDB_BASE_URL}/discover/movie?api_key=${process.env.TMDB_API_KEY}&include_adult=false&${query}`,
-          // {
-            // params: {
-            //  query              //this will send query as ?query= .... in url and we can still send query directly right after ?...
-            // },
-          // },
-        );
 
-        if (data) console.log("Get Filter Page data ", data);
+    const { data } = await axios.get(
+      `${TMDB_BASE_URL}/discover/movie?api_key=${process.env.TMDB_API_KEY}&include_adult=false&${query}`,
+      // {
+      // params: {
+      //  query              //this will send query as ?query= .... in url and we can still send query directly right after ?...
+      // },
+      // },
+    );
 
-        //we have to return this kind of data (same as retun type after ai search):-
-        // id: tmdbData.id,
-        // title: tmdbData.title || tmdbData.name,
-        // genre: rec.title,
-        // poster: tmdbData.poster_path,
-        // rating: tmdbData.vote_average,
-        // overview: tmdbData.overview,
-        // reason: item.reason, // AI personalization
+    if (data) console.log("Get Filter Page data ", data);
 
-        const movies:MovieData[] = data.results.map((tmdbData: any) => ({
-          id: tmdbData.id,
-          title: tmdbData.title || tmdbData.name,
-          genre: null,
-          poster: tmdbData.poster_path
-            ? `https://image.tmdb.org/t/p/w500${tmdbData.poster_path}`
-            : null,
-          rating: tmdbData.vote_average ?? null,
-          overview: tmdbData.overview ?? "",
-          reason: null, // no AI reason on filter page
-        }));
+    //we have to return this kind of data (same as retun type after ai search):-
+    // id: tmdbData.id,
+    // title: tmdbData.title || tmdbData.name,
+    // genre: rec.title,
+    // poster: tmdbData.poster_path,
+    // rating: tmdbData.vote_average,
+    // overview: tmdbData.overview,
+    // reason: item.reason, // AI personalization
 
-        // return apiResponse(true, "Success", 200,movies);
-        return apiResponse(true, "Success", 200, {
-  results: movies,
-  page: data.page,
-  total_pages: data.total_pages,
-  // total_pages: 2,
-  total_results: data.total_results,
-});
-      }
-    
-      catch (error) {
-        return apiResponse(false, "Something went wrong",400)
-      }
-    } 
-   
-   
-  
+    const movies: MovieData[] = data.results.map((tmdbData: any) => ({
+      id: tmdbData.id,
+      title: tmdbData.title || tmdbData.name,
+      genre: null,
+      poster: tmdbData.poster_path
+        ? `https://image.tmdb.org/t/p/w500${tmdbData.poster_path}`
+        : null,
+      rating: tmdbData.vote_average ?? null,
+      overview: tmdbData.overview ?? "",
+      reason: null, // no AI reason on filter page
+    }));
 
-
-      
-    
+    return apiResponse(true, "Success", 200, {
+      results: movies,
+      page: data.page,
+      total_pages: data.total_pages,
+      // total_pages: 2,
+      total_results: data.total_results,
+    });
+  } catch (error) {
+    return apiResponse(false, "Something went wrong", 400);
+  }
+}
